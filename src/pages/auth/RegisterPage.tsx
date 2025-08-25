@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import TextField from "../../components/forms/TextField.tsx";
 import PasswordField from "../../components/forms/PasswordField.tsx";
+import DateField from "../../components/forms/DateField.tsx";
 import AuthCard from "../../components/layout/AuthCard.tsx";
 import "../../components/layout/Auth.css";
 
@@ -63,22 +64,15 @@ export default function RegisterPage() {
           <div className="row">
             {/* Date of Birth */}
             <div className="col-md-6">
-              <div className="mb-3">
-                <label
-                  htmlFor="dateOfBirth"
-                  className="form-label fw-semibold mb-1"
-                >
-                  Date of Birth *
-                </label>
-                <input
-                  type="date"
-                  id="dateOfBirth"
-                  name="dateOfBirth"
-                  value={form.dateOfBirth}
-                  onChange={handleChange}
-                  className="form-control form-control-lg"
-                />
-              </div>
+              <label className="form-label fw-semibold mb-1" htmlFor="dateOfBirth">
+                Date of Birth *
+              </label>
+              <DateField
+                label="Date of Birth"
+                name="dateOfBirth"
+                value={form.dateOfBirth}
+                onChange={handleChange as any}
+              />
             </div>
 
             {/* Gender */}
