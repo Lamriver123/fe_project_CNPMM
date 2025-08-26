@@ -17,8 +17,11 @@ export default function RegisterPage() {
     dateOfBirth: "",
     gender: "male",
     address: "",
+    phoneNumber: "",
     role: "customer",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -27,26 +30,125 @@ export default function RegisterPage() {
     setForm((s) => ({ ...s, [name]: value }));
   };
 
-  const submit = (e: React.FormEvent) => {
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm((s) => ({ ...s, [name]: value }));
+  };
+
+  const validateForm = () => {
+    if (!form.fullName.trim()) {
+      setError("Full name is required");
+      return false;
+    }
+    if (!form.username.trim()) {
+      setError("Username is required");
+      return false;
+    }
+    if (!form.email.trim()) {
+      setError("Email is required");
+      return false;
+    }
+    if (!form.password) {
+      setError("Password is required");
+      return false;
+    }
+    if (form.password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return false;
+    }
+    if (form.password !== form.repassword) {
+      setError("Passwords do not match");
+      return false;
+    }
+    if (!form.dateOfBirth) {
+      setError("Date of birth is required");
+      return false;
+    }
+    if (!form.address.trim()) {
+      setError("Address is required");
+      return false;
+    }
+    return true;
+  };
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Demo: sau khi "đăng ký", chuyển qua trang nhập OTP
-    nav("/verify-otp?email=" + encodeURIComponent(form.email));
+    setError(null);
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Gọi API đăng ký để kiểm tra tài khoản đã tồn tại hay có lỗi gì không
+      const response = await fetch("/v1/api/register", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json" 
+        },
+        body: JSON.stringify({
+          fullName: form.fullName,
+          username: form.username,
+          email: form.email,
+          password: form.password,
+          phoneNumber: form.phoneNumber || null,
+          gender: form.gender === "male",
+          dateOfBirth: form.dateOfBirth,
+          address: form.address,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Xử lý lỗi từ server
+        if (response.status === 400) {
+          setError(data.message || "Registration failed - please check your information");
+        } else if (response.status === 409) {
+          setError("Username or email already exists");
+        } else {
+          setError(data.message || "Registration failed due to server error");
+        }
+        return;
+      }
+
+      if (!data.success) {
+        setError(data.message || "Registration failed");
+        return;
+      }
+
+      // Nếu đăng ký thành công -> chuyển qua trang nhập OTP
+      console.log("Registration successful:", data);
+      nav("/verify-otp?email=" + encodeURIComponent(form.email));
+      
+    } catch (err: any) {
+      console.error("Registration error:", err);
+      if (err.name === 'TypeError' && err.message.includes('fetch')) {
+        setError("Cannot connect to server. Please check your internet connection.");
+      } else {
+        setError("Registration failed due to network error");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="auth-page">
       <AuthCard className="auth-card">
-        {/* Header */}
         <h3 className="text-center mb-1 auth-title">
-          <Link to="/login" className="inactive">Login</Link>
-          {" | "}<span className="active">Register</span>
+          <Link to="/login" className="inactive">
+            Login
+          </Link>
+          {" | "}
+          <span className="active">Register</span>
         </h3>
-        {/* Subtitle */}
+
         <p className="text-center auth-subtitle mb-4">
           Create a new account to start shopping and selling with us.
         </p>
 
-        {/* Form */}
         <form onSubmit={submit}>
           <TextField
             label="Full Name *"
@@ -62,20 +164,21 @@ export default function RegisterPage() {
           />
 
           <div className="row">
-            {/* Date of Birth */}
             <div className="col-md-6">
-              <label className="form-label fw-semibold mb-1" htmlFor="dateOfBirth">
+              <label
+                className="form-label fw-semibold mb-1"
+                htmlFor="dateOfBirth"
+              >
                 Date of Birth *
               </label>
               <DateField
                 label="Date of Birth"
                 name="dateOfBirth"
                 value={form.dateOfBirth}
-                onChange={handleChange as any}
+                onChange={handleDateChange}
               />
             </div>
 
-            {/* Gender */}
             <div className="col-md-6">
               <label className="form-label fw-semibold d-block">Gender</label>
               <div className="d-flex gap-4 align-items-center">
@@ -114,10 +217,17 @@ export default function RegisterPage() {
           <TextField
             label="Email address *"
             name="email"
+            type="email"
             value={form.email}
             onChange={handleChange}
           />
-
+          <TextField
+            label="Phone Number"
+            name="phoneNumber"
+            type="tel"
+            value={form.phoneNumber}
+            onChange={handleChange}
+          />
           <TextField
             label="Address *"
             name="address"
@@ -138,8 +248,14 @@ export default function RegisterPage() {
             onChange={handleChange}
           />
 
-          <button className="btn btn-purple w-100" type="submit">
-            Register
+          {error && <div className="text-danger mb-2">{error}</div>}
+
+          <button
+            className="btn btn-purple w-100"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
       </AuthCard>

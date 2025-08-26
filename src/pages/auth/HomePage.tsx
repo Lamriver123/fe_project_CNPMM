@@ -1,0 +1,291 @@
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import "./HomePage.css";
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  category: string;
+  isNew?: boolean;
+  isHot?: boolean;
+}
+
+const products: Product[] = [
+  {
+    id: 1,
+    name: "Balo UTE Premium",
+    price: 299000,
+    originalPrice: 399000,
+    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+    category: "Balo",
+    isHot: true
+  },
+  {
+    id: 2,
+    name: "Áo Polo UTE Classic",
+    price: 189000,
+    originalPrice: 249000,
+    image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=400&h=400&fit=crop",
+    category: "Áo",
+    isNew: true
+  },
+  {
+    id: 3,
+    name: "Nón Snapback UTE",
+    price: 89000,
+    image: "https://images.unsplash.com/photo-1521369909029-2afed882baee?w=400&h=400&fit=crop",
+    category: "Nón"
+  },
+  {
+    id: 4,
+    name: "Dây đeo thẻ UTE",
+    price: 45000,
+    image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=400&fit=crop",
+    category: "Phụ kiện"
+  },
+  {
+    id: 5,
+    name: "Áo Hoodie UTE",
+    price: 349000,
+    originalPrice: 399000,
+    image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop",
+    category: "Áo",
+    isHot: true
+  },
+  {
+    id: 6,
+    name: "Túi đeo chéo UTE",
+    price: 159000,
+    image: "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=400&h=400&fit=crop",
+    category: "Túi"
+  },
+  {
+    id: 7,
+    name: "Mũ Bucket UTE",
+    price: 69000,
+    image: "https://images.unsplash.com/photo-1572307480813-ceb0e59d8325?w=400&h=400&fit=crop",
+    category: "Nón"
+  },
+  {
+    id: 8,
+    name: "Balo Mini UTE",
+    price: 199000,
+    image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=400&fit=crop",
+    category: "Balo"
+  }
+];
+
+const categories = [
+  { name: "Tất cả", value: "all" },
+  { name: "Balo", value: "Balo" },
+  { name: "Áo", value: "Áo" },
+  { name: "Nón", value: "Nón" },
+  { name: "Túi", value: "Túi" },
+  { name: "Phụ kiện", value: "Phụ kiện" }
+];
+
+export default function HomePage() {
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredProducts = products.filter(product => {
+    const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(price);
+  };
+
+  return (
+    <div className="home-page">
+      {/* Hero Section */}
+      <section className="hero-section">
+        <div className="hero-content">
+          <div className="hero-text">
+            <h1 className="hero-title">
+              Chào mừng đến với <span className="highlight">UTEShop</span>
+            </h1>
+            <p className="hero-subtitle">
+              Khám phá bộ sưu tập độc quyền với logo trường Đại học Sư phạm Kỹ thuật
+            </p>
+            <div className="hero-stats">
+              <div className="stat">
+                <span className="stat-number">500+</span>
+                <span className="stat-label">Sản phẩm</span>
+              </div>
+              <div className="stat">
+                <span className="stat-number">10K+</span>
+                <span className="stat-label">Khách hàng</span>
+              </div>
+              <div className="stat">
+                <span className="stat-number">4.9★</span>
+                <span className="stat-label">Đánh giá</span>
+              </div>
+            </div>
+            <div className="hero-buttons">
+              <Link to="/products" className="btn btn-primary">
+                Khám phá ngay
+              </Link>
+              <Link to="/about" className="btn btn-outline">
+                Tìm hiểu thêm
+              </Link>
+            </div>
+          </div>
+          <div className="hero-image">
+            <img 
+              src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=400&fit=crop" 
+              alt="UTEShop Collection"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Search & Filter Section */}
+      <section className="search-section">
+        <div className="container">
+          <div className="search-container">
+            <div className="search-box">
+              <input
+                type="text"
+                placeholder="Tìm kiếm sản phẩm..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="search-input"
+              />
+              <button className="search-btn">
+                <i className="bi bi-search"></i>
+              </button>
+            </div>
+            <div className="category-filters">
+              {categories.map((category) => (
+                <button
+                  key={category.value}
+                  className={`category-btn ${selectedCategory === category.value ? 'active' : ''}`}
+                  onClick={() => setSelectedCategory(category.value)}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Products Section */}
+      <section className="products-section">
+        <div className="container">
+          <div className="section-header">
+            <h2 className="section-title">Sản phẩm nổi bật</h2>
+            <p className="section-subtitle">
+              Bộ sưu tập độc quyền với thiết kế đẹp mắt và chất lượng cao
+            </p>
+          </div>
+
+          <div className="products-grid">
+            {filteredProducts.map((product) => (
+              <div key={product.id} className="product-card">
+                <div className="product-image">
+                  <img src={product.image} alt={product.name} />
+                  {product.isNew && <span className="badge badge-new">Mới</span>}
+                  {product.isHot && <span className="badge badge-hot">Hot</span>}
+                  <div className="product-actions">
+                    <button className="action-btn wishlist-btn">
+                      <i className="bi bi-heart"></i>
+                    </button>
+                    <button className="action-btn quick-view-btn">
+                      <i className="bi bi-eye"></i>
+                    </button>
+                  </div>
+                </div>
+                <div className="product-info">
+                  <h3 className="product-name">{product.name}</h3>
+                  <div className="product-category">{product.category}</div>
+                  <div className="product-price">
+                    <span className="current-price">{formatPrice(product.price)}</span>
+                    {product.originalPrice && (
+                      <span className="original-price">{formatPrice(product.originalPrice)}</span>
+                    )}
+                  </div>
+                  <button className="btn btn-add-cart">
+                    <i className="bi bi-cart-plus"></i>
+                    Thêm vào giỏ
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {filteredProducts.length === 0 && (
+            <div className="no-products">
+              <i className="bi bi-search"></i>
+              <h3>Không tìm thấy sản phẩm</h3>
+              <p>Thử thay đổi từ khóa tìm kiếm hoặc danh mục</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="features-section">
+        <div className="container">
+          <div className="features-grid">
+            <div className="feature-card">
+              <div className="feature-icon">
+                <i className="bi bi-truck"></i>
+              </div>
+              <h3>Miễn phí vận chuyển</h3>
+              <p>Cho đơn hàng từ 500K</p>
+            </div>
+            <div className="feature-card">
+              <div className="feature-icon">
+                <i className="bi bi-shield-check"></i>
+              </div>
+              <h3>Chất lượng đảm bảo</h3>
+              <p>100% chính hãng UTE</p>
+            </div>
+            <div className="feature-card">
+              <div className="feature-icon">
+                <i className="bi bi-arrow-clockwise"></i>
+              </div>
+              <h3>Đổi trả dễ dàng</h3>
+              <p>30 ngày đổi trả</p>
+            </div>
+            <div className="feature-card">
+              <div className="feature-icon">
+                <i className="bi bi-headset"></i>
+              </div>
+              <h3>Hỗ trợ 24/7</h3>
+              <p>Hotline: 1900-UTE</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="newsletter-section">
+        <div className="container">
+          <div className="newsletter-content">
+            <h2>Đăng ký nhận thông báo</h2>
+            <p>Nhận thông tin về sản phẩm mới và khuyến mãi đặc biệt</p>
+            <div className="newsletter-form">
+              <input
+                type="email"
+                placeholder="Nhập email của bạn..."
+                className="newsletter-input"
+              />
+              <button className="btn btn-primary">Đăng ký</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
