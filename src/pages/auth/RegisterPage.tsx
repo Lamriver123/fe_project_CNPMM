@@ -82,7 +82,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       // Gọi API đăng ký để kiểm tra tài khoản đã tồn tại hay có lỗi gì không
-      const response = await fetch("/v1/api/register", {
+      const response = await fetch("http://localhost:6969/v1/api/register", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json" 
@@ -96,17 +96,36 @@ export default function RegisterPage() {
           gender: form.gender === "male",
           dateOfBirth: form.dateOfBirth,
           address: form.address,
+          avt: null, // Add missing field that backend expects
         }),
       });
 
+      // Check if response is JSON (to handle HTML responses from 404 pages)
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        setError("Server is not responding correctly. Please check if the backend server is running.");
+        return;
+      }
+
       const data = await response.json();
+      console.log("Backend response:", data); // Add logging to see the exact error
 
       if (!response.ok) {
         // Xử lý lỗi từ server
         if (response.status === 400) {
-          setError(data.message || "Registration failed - please check your information");
+          console.log("400 error details:", data); // Log the specific error
+          if (data.errors && Array.isArray(data.errors)) {
+            // Display specific validation errors
+            console.log("Validation errors:", data.errors); // Log the specific validation errors
+            const errorMessages = data.errors.map((err: any) => err.message || err).join(", ");
+            setError(`Validation failed: ${errorMessages}`);
+          } else {
+            setError(data.message || "Registration failed - please check your information");
+          }
         } else if (response.status === 409) {
           setError("Username or email already exists");
+        } else if (response.status === 404) {
+          setError("Registration endpoint not found. Please check if the backend server is running.");
         } else {
           setError(data.message || "Registration failed due to server error");
         }

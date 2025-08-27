@@ -143,3 +143,27 @@
 .uts-btn-signup:hover {
   background: #59359c;
 }
+
+/* User info */
+.uts-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.uts-username {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.uts-btn-logout {
+  background: #dc3545;
+  color: #fff;
+  border: 1px solid #dc3545;
+}
+
+.uts-btn-logout:hover {
+  background: #c82333;
+  border-color: #c82333;
+}

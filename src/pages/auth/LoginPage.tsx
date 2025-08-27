@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { loginThunk } from "../../redux/authSlice.ts";
+import type { AppDispatch, RootState } from "../../redux/store.ts";
 import TextField from "../../components/forms/TextField.tsx";
 import PasswordField from "../../components/forms/PasswordField.tsx";
 import AuthCard from "../../components/layout/AuthCard.tsx";
@@ -7,9 +10,11 @@ import "../../components/layout/Auth.css";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { loading, error } = useSelector((s: RootState) => s.auth);
+
   const [form, setForm] = useState({ email: "", password: "", remember: false });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -18,61 +23,25 @@ export default function LoginPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setLoading(true);
+    setLocalError(null);
+
+    const action = await dispatch(loginThunk({ username: form.email, password: form.password }));
     
-    try {
-      const response = await fetch("/v1/api/login", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json" 
-        },
-        body: JSON.stringify({
-          username: form.email, // Backend expects 'username' field
-          password: form.password
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          setError("Invalid username or password");
-        } else if (response.status === 400) {
-          setError(data.message || "Please check your input");
-        } else {
-          setError(data.message || "Login failed");
-        }
-        return;
-      }
-
-      if (!data.success) {
-        setError(data.message || "Login failed");
-        return;
-      }
-
-      // Lưu token vào localStorage nếu remember me được chọn
-      if (form.remember && data.token) {
-        localStorage.setItem('token', data.token);
-        if (data.refreshToken) {
-          localStorage.setItem('refreshToken', data.refreshToken);
+    // Debug: Log the action result
+    console.log("Login action result:", action);
+    
+    if (loginThunk.fulfilled.match(action)) {
+      console.log("Login successful, payload:", action.payload);
+      if (form.remember && action.payload.token) {
+        localStorage.setItem("token", action.payload.token);
+        if (action.payload.refreshToken) {
+          localStorage.setItem("refreshToken", action.payload.refreshToken);
         }
       }
-
-      console.log("Login successful:", data);
-      
-      // Redirect to dashboard or home page
-      navigate("/dashboard");
-      
-    } catch (err: any) {
-      console.error("Login error:", err);
-      if (err.name === 'TypeError' && err.message.includes('fetch')) {
-        setError("Cannot connect to server. Please check your internet connection.");
-      } else {
-        setError("Login failed due to network error");
-      }
-    } finally {
-      setLoading(false);
+      navigate("/home");
+    } else if (loginThunk.rejected.match(action)) {
+      console.log("Login failed:", action.payload);
+      setLocalError((action.payload as string) || "Login failed");
     }
   };
 
@@ -125,7 +94,9 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          {error && <div className="text-danger mb-2">{error}</div>}
+          {(localError || error) && (
+            <div className="text-danger mb-2">{localError || error}</div>
+          )}
           <button className="btn btn-purple w-100" type="submit" disabled={loading}>
             {loading ? "Logging in..." : "Log in"}
           </button>

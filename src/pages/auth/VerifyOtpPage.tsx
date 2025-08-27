@@ -27,7 +27,7 @@ export default function VerifyOtpPage() {
 
     setLoading(true);
     try {
-      const response = await fetch("/v1/api/verify-otp", {
+      const response = await fetch("http://localhost:6969/v1/api/verify-otp", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json" 
@@ -76,7 +76,7 @@ export default function VerifyOtpPage() {
 
     setLoading(true);
     try {
-      const response = await fetch("/v1/api/resend-otp", {
+      const response = await fetch("http://localhost:6969/v1/api/resend-otp", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json" 

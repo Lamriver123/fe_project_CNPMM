@@ -6,14 +6,52 @@ import "../../components/layout/Auth.css";
 import TextField from "../../components/forms/TextField.tsx";
 
 export default function ForgotPasswordPage() {
-  const [form, setForm] = useState({ email: "", repassword: "", password: "" });
+  const [form, setForm] = useState({
+    email: "",
+    repassword: "",
+    password: "",
+    otp: "",
+  });
   const [loading, setLoading] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  const sendOtp = async () => {
+    if (!form.email) {
+      setError("Please enter your email before requesting OTP");
+      return;
+    }
+
+    setError(null);
+    setSuccess(null);
+    setOtpLoading(true);
+    try {
+      const response = await fetch("http://localhost:6969/v1/api/resend-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setError(data.message || "Failed to send OTP");
+        return;
+      }
+
+      setSuccess("OTP sent to your email!");
+    } catch (err) {
+      console.error("Send OTP error:", err);
+      setError("Failed to send OTP due to network/server error");
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setForm((s) => ({ ...s, [name]: type === "checkbox" ? checked : value }));
+    const { name, value } = e.target;
+    setForm((s) => ({ ...s, [name]: value }));
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -25,7 +63,6 @@ export default function ForgotPasswordPage() {
       setError("Passwords do not match");
       return;
     }
-
     if (form.password.length < 6) {
       setError("Password must be at least 6 characters");
       return;
@@ -33,30 +70,19 @@ export default function ForgotPasswordPage() {
 
     setLoading(true);
     try {
-      const response = await fetch("/v1/api/forgot-password", {
+      const response = await fetch("http://localhost:6969/v1/api/forgot-password", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json" 
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: form.email,
           newPassword: form.password,
-          otp: "123456" // This should come from OTP verification step
+          otp: form.otp,
         }),
       });
 
       const data = await response.json();
 
-      if (!response.ok) {
-        if (response.status === 400) {
-          setError(data.message || "Invalid request");
-        } else {
-          setError(data.message || "Password reset failed");
-        }
-        return;
-      }
-
-      if (!data.success) {
+      if (!response.ok || !data.success) {
         setError(data.message || "Password reset failed");
         return;
       }
@@ -65,14 +91,9 @@ export default function ForgotPasswordPage() {
       setTimeout(() => {
         window.location.href = "/login";
       }, 2000);
-      
     } catch (err: any) {
       console.error("Password reset error:", err);
-      if (err.name === 'TypeError' && err.message.includes('fetch')) {
-        setError("Cannot connect to server. Please check your internet connection.");
-      } else {
-        setError("Password reset failed due to network error");
-      }
+      setError("Password reset failed due to network error");
     } finally {
       setLoading(false);
     }
@@ -86,20 +107,42 @@ export default function ForgotPasswordPage() {
 
         {/* Subtitle */}
         <p className="text-center auth-subtitle mb-4">
-          Enter your email and new password.
+          Enter your email, OTP and new password.
         </p>
 
         {/* Form */}
         <form onSubmit={submit}>
+          {/* Email */}
           <label className="form-label fw-semibold">Email *</label>
+          <div className="d-flex gap-2">
+            <TextField
+              label="Email address *"
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+            />
+            <button
+              type="button"
+              className="btn btn-outline-purple"
+              onClick={sendOtp}
+              disabled={otpLoading}
+            >
+              {otpLoading ? "Sending..." : "Send OTP"}
+            </button>
+          </div>
+
+          {/* OTP */}
+          <label className="form-label fw-semibold mt-3">OTP *</label>
           <TextField
-            label="Email address *"
-            name="email"
-            type="email"
-            value={form.email}
+            label="Enter OTP *"
+            name="otp"
+            type="text"
+            value={form.otp}
             onChange={handleChange}
           />
 
+          {/* New Password */}
           <label className="form-label fw-semibold">New password *</label>
           <PasswordField
             label="New password *"
@@ -108,6 +151,7 @@ export default function ForgotPasswordPage() {
             onChange={handleChange}
           />
 
+          {/* Confirm Password */}
           <label className="form-label fw-semibold">Confirm password *</label>
           <PasswordField
             label="Confirm password *"
@@ -116,6 +160,7 @@ export default function ForgotPasswordPage() {
             onChange={handleChange}
           />
 
+          {/* Messages */}
           {error && <div className="text-danger mb-2">{error}</div>}
           {success && <div className="text-success mb-2">{success}</div>}
 
