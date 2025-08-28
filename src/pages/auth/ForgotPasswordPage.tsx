@@ -19,7 +19,7 @@ export default function ForgotPasswordPage() {
 
   const sendOtp = async () => {
     if (!form.email) {
-      setError("Please enter your email before requesting OTP");
+      setError("Please enter your email before requesting OTP.!");
       return;
     }
 
