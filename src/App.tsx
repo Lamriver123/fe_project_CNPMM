@@ -9,6 +9,7 @@ import Navbar from "./components/layout/Navbar.tsx";
 import Header from "./components/layout/Header.tsx";
 import Footer from "./components/layout/Footer.tsx";
 import Body from "./components/layout/Body.tsx";
+import ProductsPage from "./pages/products/ProductsPage.tsx";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/verify-otp" element={<VerifyOtpPage />} />
+          <Route path="/products" element={<ProductsPage />} />
         </Routes>
       </Body>
       <Footer />

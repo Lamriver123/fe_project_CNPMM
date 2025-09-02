@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import ProductsSection from "../../components/products/ProductsSection.tsx";
 import "./HomePage.css";
+
+
 
 interface Product {
   id: number;
@@ -180,7 +183,7 @@ export default function HomePage() {
       </section>
 
       {/* Products Section */}
-      <section className="products-section">
+      {/* <section className="products-section">
         <div className="container">
           <div className="section-header">
             <h2 className="section-title">Sản phẩm nổi bật</h2>
@@ -231,7 +234,14 @@ export default function HomePage() {
             </div>
           )}
         </div>
-      </section>
+      </section> */}
+      <ProductsSection
+        title="Sản phẩm nổi bật"
+        subtitle="Bộ sưu tập độc quyền với thiết kế đẹp mắt và chất lượng cao"
+        products={filteredProducts}
+        formatPrice={formatPrice}
+      />
+
 
       {/* Features Section */}
       <section className="features-section">
