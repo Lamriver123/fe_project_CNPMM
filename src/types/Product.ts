@@ -4,7 +4,7 @@ export interface Product {
   price: number;              // Giá bán thực tế
   originalPrice?: number;     // Giá gốc (nếu có khuyến mãi)
   discountPercent?: number;   // % khuyến mãi
-  image: string;
+  images: string[];       // Danh sách URL hình ảnh
   category: string;
 
   // Dùng cho lọc/sắp xếp
@@ -13,4 +13,5 @@ export interface Product {
   createdAt: number;          // Ngày thêm sản phẩm
   sold: number;              // Số lượng đã bán
   views: number;             // Số lượt xem
+  stock: number;            // Số lượng trong kho
 }
