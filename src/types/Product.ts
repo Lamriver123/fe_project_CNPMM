@@ -1,10 +1,16 @@
 export interface Product {
   id: number;
   name: string;
-  price: number;
-  originalPrice?: number;
+  price: number;              // Giá bán thực tế
+  originalPrice?: number;     // Giá gốc (nếu có khuyến mãi)
+  discountPercent?: number;   // % khuyến mãi
   image: string;
   category: string;
-  isNew?: boolean;
-  isHot?: boolean;
+
+  // Dùng cho lọc/sắp xếp
+  isNew?: boolean;            // Sản phẩm mới
+  isHot?: boolean;            // Sản phẩm bán chạy
+  createdAt: number;          // Ngày thêm sản phẩm
+  sold: number;              // Số lượng đã bán
+  views: number;             // Số lượt xem
 }

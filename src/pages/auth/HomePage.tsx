@@ -1,20 +1,21 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import ProductsSection from "../../components/products/ProductsSection.tsx";
+import { Product } from "../../types/Product.ts";
 import "./HomePage.css";
 
 
+// interface Product {
+//   id: number;
+//   name: string;
+//   price: number;
+//   originalPrice?: number;
+//   image: string;
+//   category: string;
+//   isNew?: boolean;
+//   isHot?: boolean;
+// }
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  category: string;
-  isNew?: boolean;
-  isHot?: boolean;
-}
 
 const products: Product[] = [
   {
@@ -24,7 +25,11 @@ const products: Product[] = [
     originalPrice: 399000,
     image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
     category: "Balo",
-    isHot: true
+    isHot: true,
+    createdAt: Date.now(),
+    sold: 120,
+    views: 500,
+    discountPercent: 25,
   },
   {
     id: 2,
@@ -33,21 +38,33 @@ const products: Product[] = [
     originalPrice: 249000,
     image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=400&h=400&fit=crop",
     category: "Áo",
-    isNew: true
+    isNew: true,
+    createdAt: Date.now(),
+    sold: 300,
+    views: 800,
+    discountPercent: 20,
   },
   {
     id: 3,
     name: "Nón Snapback UTE",
     price: 89000,
     image: "https://images.unsplash.com/photo-1521369909029-2afed882baee?w=400&h=400&fit=crop",
-    category: "Nón"
+    category: "Nón",
+    createdAt: Date.now(),
+    sold: 50,
+    views: 200,
+    discountPercent: 0,
   },
   {
     id: 4,
     name: "Dây đeo thẻ UTE",
     price: 45000,
     image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=400&fit=crop",
-    category: "Phụ kiện"
+    category: "Phụ kiện",
+    createdAt: Date.now(),
+    sold: 80,
+    views: 1000,
+    discountPercent: 10,
   },
   {
     id: 5,
@@ -56,28 +73,44 @@ const products: Product[] = [
     originalPrice: 399000,
     image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop",
     category: "Áo",
-    isHot: true
+    isHot: true,
+    createdAt: Date.now(),
+    sold: 500,
+    views: 2000,
+    discountPercent: 15,
   },
   {
     id: 6,
     name: "Túi đeo chéo UTE",
     price: 159000,
     image: "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=400&h=400&fit=crop",
-    category: "Túi"
+    category: "Túi",
+    createdAt: Date.now(),
+    sold: 40,
+    views: 150,
+    discountPercent: 5,
   },
   {
     id: 7,
     name: "Mũ Bucket UTE",
     price: 69000,
     image: "https://images.unsplash.com/photo-1572307480813-ceb0e59d8325?w=400&h=400&fit=crop",
-    category: "Nón"
+    category: "Nón",
+    createdAt: Date.now(),
+    sold: 250,
+    views: 1200,
+    discountPercent: 0,
   },
   {
     id: 8,
     name: "Balo Mini UTE",
     price: 199000,
     image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=400&fit=crop",
-    category: "Balo"
+    category: "Balo",
+    createdAt: Date.now(),
+    sold: 90,
+    views: 300,
+    discountPercent: 30,
   }
 ];
 
