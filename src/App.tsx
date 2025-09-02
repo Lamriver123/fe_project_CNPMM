@@ -11,6 +11,7 @@ import Footer from "./components/layout/Footer.tsx";
 import Body from "./components/layout/Body.tsx";
 import ProductsPage from "./pages/products/ProductsPage.tsx";
 import ProductDetailPage from "./pages/products/ProductDetailPage.tsx";
+import ProfilePage from "./pages/profile/ProfilePage.tsx";
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="/verify-otp" element={<VerifyOtpPage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Routes>
       </Body>
       <Footer />

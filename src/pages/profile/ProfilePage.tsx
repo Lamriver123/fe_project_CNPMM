@@ -1,0 +1,107 @@
+import React, { useState } from "react";
+import { useProfile } from "../../hooks/useProfile.ts";
+import type { User } from "../../types/User";
+import ProfileHeader from "../../components/profile/ProfileHeader.tsx";
+import ProfileSidebar from "../../components/profile/ProfileSidebar.tsx";
+import PersonalInfoCard from "../../components/profile/PersonalInfoCard.tsx";
+import SecurityCard from "../../components/profile/SecurityCard.tsx";
+import OrdersCard from "../../components/profile/OrdersCard.tsx";
+import "./ProfilePage.css";
+import "../../components/profile/ProfileComponents.css";
+
+export default function ProfilePage() {
+    const { user, loading, error, updateProfile } = useProfile();
+    const [activeTab, setActiveTab] = useState('personal');
+    const [stats, setStats] = useState({
+        orders: 12,
+        reviews: 5,
+        favorites: 2
+    });
+
+    const handleUpdateProfile = async (data: Partial<User>) => {
+        try {
+            await updateProfile(data);
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        }
+    };
+
+    const renderContent = () => {
+        if (!user) return null;
+
+        switch (activeTab) {
+            case 'personal':
+                return <PersonalInfoCard user={user} onUpdate={handleUpdateProfile} />;
+            case 'orders':
+                return <OrdersCard />;
+            case 'security':
+                return <SecurityCard />;
+            default:
+                return <PersonalInfoCard user={user} onUpdate={handleUpdateProfile} />;
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="profile-page">
+                <div className="profile-container">
+                    <div className="loading-state">
+                        <i className="bi bi-arrow-clockwise"></i>
+                        <p>Đang tải thông tin...</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error && !user) {
+        return (
+            <div className="profile-page">
+                <div className="profile-container">
+                    <div className="error-state">
+                        <i className="bi bi-exclamation-triangle"></i>
+                        <p>{error}</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return (
+            <div className="profile-page">
+                <div className="profile-container">
+                    <div className="error-state">
+                        <i className="bi bi-exclamation-triangle"></i>
+                        <p>Không thể tải thông tin người dùng</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="profile-page">
+            <div className="profile-container">
+                {/* Error notification */}
+                {error && (
+                    <div className="error-notification">
+                        <i className="bi bi-exclamation-triangle"></i>
+                        <span>{error}</span>
+                    </div>
+                )}
+
+                {/* Header */}
+                <ProfileHeader user={user} stats={stats} />
+
+                {/* Content */}
+                <div className="profile-content">
+                    <ProfileSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+                    <div className="profile-main">
+                        {renderContent()}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}

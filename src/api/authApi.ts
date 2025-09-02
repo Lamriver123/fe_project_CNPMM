@@ -1,4 +1,5 @@
 import axios from 'axios';
+import axiosClient from './axiosClient.ts';
 
 const API_URL = 'http://localhost:6969/v1/api';
 
@@ -47,9 +48,15 @@ export const forgotPassword = async (data: { email: string; otp: string; newPass
 };
 
 // Get user profile (protected)
+// export const getUserProfile = async (token: string) => {
+//   const res = await axios.get(`${API_URL}/profile`, {
+//     headers: { Authorization: `Bearer ${token}` },
+//   });
+//   return res.data;
+// };
+
+// sử dụng axiosClient
 export const getUserProfile = async (token: string) => {
-  const res = await axios.get(`${API_URL}/profile`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const res = await axiosClient.get(`${API_URL}/profile`);
   return res.data;
 };

@@ -1,5 +1,5 @@
 // src/components/Navbar.tsx
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../redux/authSlice.ts";
@@ -10,13 +10,44 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, token } = useSelector((state: RootState) => state.auth);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Debug: Log Redux state
-  console.log("Navbar - Redux state:", { user, token });
+  // console.log("Navbar - Redux state:", { user, token });
+
+  // Đóng khi người dùng click ra ngoài Dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleLogout = () => {
     dispatch(logout());
     navigate("/home");
+    setIsDropdownOpen(false);
+  };
+
+  const handleProfileClick = () => {
+    navigate("/profile");
+    setIsDropdownOpen(false);
+  };
+
+  const handleOrdersClick = () => {
+    navigate("/orders");
+    setIsDropdownOpen(false);
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   return (
@@ -75,16 +106,32 @@ const Navbar: React.FC = () => {
 
           {/* Auth buttons or User info */}
           {token && user ? (
-            <div className="uts-user-info">
-              <span className="uts-username">
-                Xin chào, {user.fullName || user.username || user.email}
-              </span>
-              <button
-                className="uts-btn uts-btn-logout"
-                onClick={handleLogout}
-              >
-                Đăng xuất
-              </button>
+            <div className="uts-user-info" ref={dropdownRef}>
+              <div className="uts-user-dropdown">
+                <span className="uts-username" onClick={toggleDropdown}>
+                  Xin chào, {(user.fullName && user.fullName !== user.email)
+                    ? user.fullName
+                    : user.username || user.email}
+                  <i className={`bi bi-chevron-${isDropdownOpen ? 'up' : 'down'}`}></i>
+                </span>
+                {isDropdownOpen && (
+                  <div className="uts-dropdown-menu">
+                    <div className="uts-dropdown-item" onClick={handleProfileClick}>
+                      <i className="bi bi-person"></i>
+                      <span>Profile</span>
+                    </div>
+                    <div className="uts-dropdown-item" onClick={handleOrdersClick}>
+                      <i className="bi bi-bag"></i>
+                      <span>Đơn hàng của tôi</span>
+                    </div>
+                    <div className="uts-dropdown-divider"></div>
+                    <div className="uts-dropdown-item" onClick={handleLogout}>
+                      <i className="bi bi-box-arrow-right"></i>
+                      <span>Logout</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <>
@@ -104,7 +151,7 @@ const Navbar: React.FC = () => {
           )}
         </div>
       </div>
-    </nav>
+    </nav >
   );
 };
 
