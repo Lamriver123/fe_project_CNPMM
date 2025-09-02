@@ -1,5 +1,8 @@
 import { useParams } from "react-router-dom";
+import CommentsSection from "../../components/comments/CommentsSetion.tsx";
+import ProductsSection from "../../components/products/ProductsSection.tsx";
 import { Product } from "../../types/Product";
+import { formatPrice } from "../../utils/format.ts";
 import "./ProductDetailPage.css";
 const mockProducts: Product[] = [
   {
@@ -98,9 +101,6 @@ const mockProducts: Product[] = [
   }
 ];
 
-// ...existing code...
-
-// ...existing code...
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -111,7 +111,8 @@ export default function ProductDetailPage() {
   }
 
  return (
-    <div className="product-detail-container">
+    <div>
+      <div className="product-detail-container">
       {/* Hình ảnh bên trái */}
       <div className="product-image">
         <img src={product.image} alt={product.name} />
@@ -148,10 +149,13 @@ export default function ProductDetailPage() {
             {new Date(product.createdAt).toLocaleDateString()}
           </p>
         </div>
-
+            
         {/* Nút mua hàng */}
         <button className="btn-add-cart">🛒 Thêm vào giỏ</button>
       </div>
+    </div>
+      <CommentsSection />
+      <ProductsSection title="Sản phẩm liên quan" products={mockProducts} subtitle={""} formatPrice={formatPrice} />
     </div>
   );
 }
