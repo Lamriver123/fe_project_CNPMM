@@ -4,6 +4,7 @@ import ProductsSection from "../../components/products/ProductsSection.tsx";
 import { Product } from "../../types/Product";
 import { formatPrice } from "../../utils/format.ts";
 import "./ProductDetailPage.css";
+import { useEffect } from "react";
 const mockProducts: Product[] = [
   {
     id: 1,
@@ -103,6 +104,9 @@ const mockProducts: Product[] = [
 
 
 export default function ProductDetailPage() {
+    useEffect(() => {
+    window.scrollTo(0, 0); // scroll tới đầu trang
+  }, []);
   const { id } = useParams<{ id: string }>();
   const product = mockProducts.find((p) => p.id === Number(id));
 

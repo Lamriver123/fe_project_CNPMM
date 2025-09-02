@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import "./Product.css";
 interface Product {
   id: number;
@@ -15,9 +16,18 @@ interface ProductCardProps {
   formatPrice: (price: number) => string;
 }
 
+
+
+
 export default function ProductCard({ product, formatPrice }: ProductCardProps) {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(`/products/1`); // Thay '1' bằng product.id khi có dữ liệu thật ${product.id}
+  }
+
   return (
-    <div className="product-card">
+    <div className="product-card" onClick={handleCardClick}>
       <div className="product-image">
         <img src={product.image} alt={product.name} />
         {product.isNew && <span className="badge badge-new">Mới</span>}
@@ -26,7 +36,8 @@ export default function ProductCard({ product, formatPrice }: ProductCardProps) 
           <button className="action-btn wishlist-btn">
             <i className="bi bi-heart"></i>
           </button>
-          <button className="action-btn quick-view-btn">
+          <button className="action-btn quick-view-btn"
+            onClick={handleCardClick}>
             <i className="bi bi-eye"></i>
           </button>
         </div>
