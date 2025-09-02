@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "swiper/css";
+import { Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import CommentsSection from "../../components/comments/CommentsSetion.tsx";
 import ProductsSection from "../../components/products/ProductsSection.tsx";
@@ -145,7 +146,12 @@ export default function ProductDetailPage() {
       <div className="product-detail-container">
         {/* Swiper hình ảnh */}
         <div className="product-image">
-          <Swiper spaceBetween={10} slidesPerView={1}>
+          <Swiper
+            spaceBetween={10}
+            slidesPerView={1}
+            autoplay={{ delay: 3000, disableOnInteraction: false }}
+            modules={[Autoplay]} 
+          >
             {product.images?.map((img, index) => (
               <SwiperSlide key={index}>
                 <img src={img} alt={`${product.name} ${index + 1}`} />

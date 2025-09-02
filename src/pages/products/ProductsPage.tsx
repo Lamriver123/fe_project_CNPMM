@@ -4,105 +4,116 @@ import { formatPrice } from "../../utils/format.ts";
 
 const ProductsPage = () => {
   // Mock data (bổ sung thêm field: sold, views, discount, createdAt)
-const products: Product[] = [
-  { 
-    id: 1, 
-    name: "Sản phẩm A", 
-    price: 100000, 
-    originalPrice: 120000, 
-    discountPercent: 10, 
-    image: "/images/product-a.jpg", 
-    category: "Điện thoại", 
-    sold: 120, 
-    views: 500, 
-    createdAt: 20240901 
+  const products: Product[] = [
+    {
+    id: 1,
+    name: "Balo UTE Premium",
+    price: 299000,
+    originalPrice: 399000,
+    images: 
+    [
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&h=400&fit=crop"
+    ],
+    // image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+    category: "Balo",
+    isHot: true,
+    createdAt: Date.now(),
+    sold: 120,
+    views: 500,
+    discountPercent: 25,
+    stock: 20
   },
-  { 
-    id: 2, 
-    name: "Sản phẩm B", 
-    price: 150000, 
-    originalPrice: 150000, 
-    discountPercent: 0, 
-    image: "/images/product-b.jpg", 
-    category: "Laptop", 
-    sold: 300, 
-    views: 800, 
-    createdAt: 20240902 
+  {
+    id: 2,
+    name: "Áo Polo UTE Classic",
+    price: 189000,
+    originalPrice: 249000,
+    images: ["https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=400&h=400&fit=crop"],
+    category: "Áo",
+    isNew: true,
+    createdAt: Date.now(),
+    sold: 300,
+    views: 800,
+    discountPercent: 20,
+     stock: 20,
   },
-  { 
-    id: 3, 
-    name: "Sản phẩm C", 
-    price: 200000, 
-    originalPrice: 210000, 
-    discountPercent: 5, 
-    image: "/images/product-c.jpg", 
-    category: "Phụ kiện", 
-    sold: 50, 
-    views: 200, 
-    createdAt: 20240903 
+  {
+    id: 3,
+    name: "Nón Snapback UTE",
+    price: 89000,
+    images: ["https://images.unsplash.com/photo-1521369909029-2afed882baee?w=400&h=400&fit=crop"],
+    category: "Nón",
+    createdAt: Date.now(),
+    sold: 50,
+    views: 200,
+    discountPercent: 0,
+     stock: 20,
   },
-  { 
-    id: 4, 
-    name: "Sản phẩm D", 
-    price: 250000, 
-    originalPrice: 312500, 
-    discountPercent: 20, 
-    image: "/images/product-d.jpg", 
-    category: "Tablet", 
-    sold: 80, 
-    views: 1000, 
-    createdAt: 20240904 
+  {
+    id: 4,
+    name: "Dây đeo thẻ UTE",
+    price: 45000,
+    images: ["https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=400&fit=crop"],
+    category: "Phụ kiện",
+    createdAt: Date.now(),
+    sold: 80,
+    views: 1000,
+    discountPercent: 10,
+     stock: 20,
   },
-  { 
-    id: 5, 
-    name: "Sản phẩm E", 
-    price: 300000, 
-    originalPrice: 352940, 
-    discountPercent: 15, 
-    image: "/images/product-e.jpg", 
-    category: "Tai nghe", 
-    sold: 500, 
-    views: 2000, 
-    createdAt: 20240905 
+  {
+    id: 5,
+    name: "Áo Hoodie UTE",
+    price: 349000,
+    originalPrice: 399000,
+    images: ["https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop"],
+    category: "Áo",
+    isHot: true,
+    createdAt: Date.now(),
+    sold: 500,
+    views: 2000,
+    discountPercent: 15,
+     stock: 20,
   },
-  { 
-    id: 6, 
-    name: "Sản phẩm F", 
-    price: 350000, 
-    originalPrice: 500000, 
-    discountPercent: 30, 
-    image: "/images/product-f.jpg", 
-    category: "Đồng hồ", 
-    sold: 40, 
-    views: 150, 
-    createdAt: 20240906 
+  {
+    id: 6,
+    name: "Túi đeo chéo UTE",
+    price: 159000,
+    images: ["https://images.unsplash.com/photo-1591561954557-26941169b49e?w=400&h=400&fit=crop"],
+    category: "Túi",
+    createdAt: Date.now(),
+    sold: 40,
+    views: 150,
+    discountPercent: 5,
+     stock: 20,
   },
-  { 
-    id: 7, 
-    name: "Sản phẩm G", 
-    price: 400000, 
-    originalPrice: 400000, 
-    discountPercent: 0, 
-    image: "/images/product-g.jpg", 
-    category: "Loa", 
-    sold: 250, 
-    views: 1200, 
-    createdAt: 20240907 
+  {
+    id: 7,
+    name: "Mũ Bucket UTE",
+    price: 69000,
+    images: ["https://images.unsplash.com/photo-1572307480813-ceb0e59d8325?w=400&h=400&fit=crop"],
+    category: "Nón",
+    createdAt: Date.now(),
+    sold: 250,
+    views: 1200,
+    discountPercent: 0,
+     stock: 20,
   },
-  { 
-    id: 8, 
-    name: "Sản phẩm H", 
-    price: 450000, 
-    originalPrice: 600000, 
-    discountPercent: 25, 
-    image: "/images/product-h.jpg", 
-    category: "Gaming", 
-    sold: 90, 
-    views: 300, 
-    createdAt: 20240908 
-  },
-];
-
+  {
+    id: 8,
+    name: "Balo Mini UTE",
+    price: 199000,
+    images: ["https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=400&fit=crop"],
+    category: "Balo",
+    createdAt: Date.now(),
+    sold: 90,
+    views: 300,
+    discountPercent: 30,
+     stock: 20,
+  }
+  ];
 
   // Lấy 8 sản phẩm mới nhất
   const latestProducts = [...products].sort((a, b) => b.createdAt - a.createdAt).slice(0, 8);

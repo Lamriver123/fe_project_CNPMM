@@ -17,7 +17,7 @@ export default function ProductsSection({
 }: ProductsSectionProps) {
   return (
     <section className="products-section">
-      <div className="container">
+      <div className="product-container">
         <div className="section-header">
           <h2 className="section-title">{title}</h2>
           <p className="section-subtitle">{subtitle}</p>

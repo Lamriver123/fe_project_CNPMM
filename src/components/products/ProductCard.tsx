@@ -1,15 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import "./Product.css";
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  category: string;
-  isNew?: boolean;
-  isHot?: boolean;
-}
+import { Product } from "../../types/Product";
+// interface Product {
+//   id: number;
+//   name: string;
+//   price: number;
+//   originalPrice?: number;
+//   image: string;
+//   category: string;
+//   isNew?: boolean;
+//   isHot?: boolean;
+// }
 
 interface ProductCardProps {
   product: Product;
@@ -29,7 +30,7 @@ export default function ProductCard({ product, formatPrice }: ProductCardProps) 
   return (
     <div className="product-card" onClick={handleCardClick}>
       <div className="product-image">
-        <img src={product.image} alt={product.name} />
+        <img src={product.images[0]} alt={product.name} />
         {product.isNew && <span className="badge badge-new">Mới</span>}
         {product.isHot && <span className="badge badge-hot">Hot</span>}
         <div className="product-actions">

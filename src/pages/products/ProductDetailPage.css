@@ -15,14 +15,16 @@
   align-items: flex-start;
   justify-content: center;
   height: auto;
-  max-height: 360px;
+  max-height: 460px;
+  border-radius: 16px;
 }
 
 .product-image img {
-  width: 100%;
-  max-height: 500px;
-  object-fit: contain;
-  border-radius: 12px;
+    width: 100%;
+    overflow: hidden;
+    max-height: 500px;
+    object-fit: cover;
+
 }
 
 /* Cột thông tin */
