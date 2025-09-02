@@ -1,4 +1,4 @@
-
+import "./Product.css";
 interface Product {
   id: number;
   name: string;

@@ -1,6 +1,6 @@
 import ProductCard from "./ProductCard.tsx";
 import { Product } from "../../types/Product.ts";
-
+import "./Product.css";
 
 interface ProductsSectionProps {
   title: string;
