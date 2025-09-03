@@ -30,7 +30,7 @@ export const loginThunk = createAsyncThunk(
         body: JSON.stringify(payload),
       });
       const data: LoginResponse = await res.json();
-      console.log("Backend response:", data); // Debug log
+      // console.log("Backend response:", data); // Debug log
 
       if (!res.ok || !data.success) {
         return rejectWithValue(data.message || "Login failed");
@@ -74,6 +74,7 @@ const authSlice = createSlice({
       if (typeof localStorage !== "undefined") {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
+        localStorage.removeItem("user");
 
       }
     },
@@ -83,6 +84,7 @@ const authSlice = createSlice({
     },
     updateUser(state, action: PayloadAction<User>) {
       state.user = action.payload;
+      localStorage.setItem("user", JSON.stringify(action.payload));
     },
   },
   extraReducers: (builder) => {
@@ -104,7 +106,9 @@ const authSlice = createSlice({
           if (action.payload.refreshToken) {
             localStorage.setItem("refresh_token", action.payload.refreshToken);
           }
-
+          if (action.payload.user) {
+            localStorage.setItem("user", JSON.stringify(action.payload.user));
+          }
         }
       })
       .addCase(loginThunk.rejected, (state, action) => {

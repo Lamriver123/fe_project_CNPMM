@@ -10,7 +10,7 @@ const PersonalInfoCard: React.FC<PersonalInfoCardProps> = ({ user, onUpdate }) =
     const [isEditing, setIsEditing] = useState(false);
 
     const [formData, setFormData] = useState({
-        fullName: (user.fullName && user.fullName !== user.email) ? user.fullName : "",
+        fullName: user.fullName ? user.fullName : "",
         phoneNumber: user.phoneNumber || "",
         dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split('T')[0] : "",
         gender: user.gender,

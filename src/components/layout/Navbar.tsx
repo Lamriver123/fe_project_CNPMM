@@ -109,9 +109,7 @@ const Navbar: React.FC = () => {
             <div className="uts-user-info" ref={dropdownRef}>
               <div className="uts-user-dropdown">
                 <span className="uts-username" onClick={toggleDropdown}>
-                  Xin chào, {(user.fullName && user.fullName !== user.email)
-                    ? user.fullName
-                    : user.username || user.email}
+                  Xin chào, {user.fullName}
                   <i className={`bi bi-chevron-${isDropdownOpen ? 'up' : 'down'}`}></i>
                 </span>
                 {isDropdownOpen && (

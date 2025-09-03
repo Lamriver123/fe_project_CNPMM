@@ -34,8 +34,8 @@ export default function ProfilePage() {
                 return <PersonalInfoCard user={user} onUpdate={handleUpdateProfile} />;
             case 'orders':
                 return <OrdersCard />;
-            case 'security':
-                return <SecurityCard />;
+            // case 'security':
+            //     return <SecurityCard />;
             default:
                 return <PersonalInfoCard user={user} onUpdate={handleUpdateProfile} />;
         }
@@ -99,6 +99,7 @@ export default function ProfilePage() {
                     <ProfileSidebar activeTab={activeTab} onTabChange={setActiveTab} />
                     <div className="profile-main">
                         {renderContent()}
+                        {activeTab === 'personal' && <SecurityCard />}
                     </div>
                 </div>
             </div>
