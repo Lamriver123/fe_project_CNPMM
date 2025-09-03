@@ -14,20 +14,34 @@ import ProductDetailPage from "./pages/products/ProductDetailPage.tsx";
 import ProfilePage from "./pages/profile/ProfilePage.tsx";
 import { setToken, updateUser } from "./redux/authSlice.ts";
 import { useDispatch } from "react-redux";
+import { profileApi } from "./api/profileApi.ts";
 
 export default function App() {
   const dispatch = useDispatch();
 
+
+
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    const refreshToken = localStorage.getItem("refresh_token");
-    const user = localStorage.getItem("user");
-    if (token) {
-      dispatch(setToken({ token, refreshToken: refreshToken ?? undefined }));
-    }
-    if (user) {
-      dispatch(updateUser(JSON.parse(user)));
-    }
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("access_token");
+        const refreshToken = localStorage.getItem("refresh_token");
+
+        if (token) {
+          dispatch(setToken({ token, refreshToken: refreshToken ?? undefined }));
+        }
+
+        // Gọi API lấy thông tin user
+        const response = await profileApi.getProfile();
+        if (response?.data) {
+          dispatch(updateUser(response.data));
+        }
+      } catch (error) {
+        console.error("Failed to load profile:", error);
+      }
+    };
+
+    fetchProfile();
   }, [dispatch]);
 
   return (

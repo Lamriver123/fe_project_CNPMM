@@ -164,7 +164,7 @@
     box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
 }
 
-.stat-number {
+.profile-stat-number {
     display: block;
     font-size: 24px;
     font-weight: 700;
@@ -175,7 +175,7 @@
     margin-bottom: 4px;
 }
 
-.stat-label {
+.profile-stat-label {
     font-size: 14px;
     color: #666;
     font-weight: 500;

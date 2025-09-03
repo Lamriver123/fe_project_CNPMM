@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { User } from "../../types/User";
 
 interface ProfileHeaderProps {
@@ -11,17 +11,50 @@ interface ProfileHeaderProps {
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, stats }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [previewAvatar, setPreviewAvatar] = useState<string | null>(null);
+
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    useEffect(() => {
+        // Cleanup blob URL khi component unmount hoặc preview thay đổi
+        return () => {
+            if (previewAvatar) {
+                URL.revokeObjectURL(previewAvatar);
+            }
+        };
+    }, [previewAvatar]);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            console.log("File đã chọn:", file);
+            setPreviewAvatar(URL.createObjectURL(file));
+        }
+        e.target.value = '';    // cho phép chọn lại ảnh vừa chọn trước đó
+    };
+
     return (
         <div className="profile-header">
-            <div className="profile-avatar">
+            <div className="profile-avatar" onClick={handleAvatarClick}>
                 <img
-                    src={user.avt || "https://via.placeholder.com/120x120/6f42c1/ffffff?text=U"}
+                    src={previewAvatar || user.avt || "https://via.placeholder.com/120x120/6f42c1/ffffff?text=U"}
                     alt="Avatar"
                     className="avatar-img"
                 />
                 <button className="avatar-edit-btn">
                     <i className="bi bi-camera"></i>
                 </button>
+                {/* input file ẩn */}
+                <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    style={{ display: "none" }}
+                    onChange={handleFileChange}
+                />
             </div>
             <div className="profile-info">
                 <h1 className="profile-name">
@@ -32,16 +65,16 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, stats }) => {
                 <p className="profile-email">{user.email}</p>
                 <div className="profile-stats">
                     <div className="stat-item">
-                        <span className="stat-number">{stats.orders}</span>
-                        <span className="stat-label">Đơn hàng</span>
+                        <span className="profile-stat-number">{stats.orders}</span>
+                        <span className="profile-stat-label">Đơn hàng</span>
                     </div>
                     <div className="stat-item">
-                        <span className="stat-number">{stats.reviews}</span>
-                        <span className="stat-label">Đánh giá</span>
+                        <span className="profile-stat-number">{stats.reviews}</span>
+                        <span className="profile-stat-label">Đánh giá</span>
                     </div>
                     <div className="stat-item">
-                        <span className="stat-number">{stats.favorites}</span>
-                        <span className="stat-label">Yêu thích</span>
+                        <span className="profile-stat-number">{stats.favorites}</span>
+                        <span className="profile-stat-label">Yêu thích</span>
                     </div>
                 </div>
             </div>

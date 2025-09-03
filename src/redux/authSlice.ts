@@ -43,7 +43,7 @@ export const loginThunk = createAsyncThunk(
 
       return {
         success: true,
-        token: accessToken, // Backend trả về accessToken
+        token: accessToken,
         refreshToken: refreshToken,
         user: user
       } as {
@@ -74,7 +74,7 @@ const authSlice = createSlice({
       if (typeof localStorage !== "undefined") {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
-        localStorage.removeItem("user");
+        //    localStorage.removeItem("user");
 
       }
     },
@@ -84,7 +84,7 @@ const authSlice = createSlice({
     },
     updateUser(state, action: PayloadAction<User>) {
       state.user = action.payload;
-      localStorage.setItem("user", JSON.stringify(action.payload));
+      //    localStorage.setItem("user", JSON.stringify(action.payload));
     },
   },
   extraReducers: (builder) => {
@@ -106,9 +106,9 @@ const authSlice = createSlice({
           if (action.payload.refreshToken) {
             localStorage.setItem("refresh_token", action.payload.refreshToken);
           }
-          if (action.payload.user) {
-            localStorage.setItem("user", JSON.stringify(action.payload.user));
-          }
+          // if (action.payload.user) {
+          //   localStorage.setItem("user", JSON.stringify(action.payload.user));
+          // }
         }
       })
       .addCase(loginThunk.rejected, (state, action) => {
