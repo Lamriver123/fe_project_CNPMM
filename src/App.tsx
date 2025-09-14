@@ -1,16 +1,16 @@
-import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import Body from "./components/layout/Body.tsx";
+import Footer from "./components/layout/Footer.tsx";
+import Header from "./components/layout/Header.tsx";
+import Navbar from "./components/layout/Navbar.tsx";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage.tsx";
+import HomePage from "./pages/auth/HomePage.tsx";
 import LoginPage from "./pages/auth/LoginPage.tsx";
 import RegisterPage from "./pages/auth/RegisterPage.tsx";
-import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage.tsx";
 import VerifyOtpPage from "./pages/auth/VerifyOtpPage.tsx";
-import HomePage from "./pages/auth/HomePage.tsx";
-import Navbar from "./components/layout/Navbar.tsx";
-import Header from "./components/layout/Header.tsx";
-import Footer from "./components/layout/Footer.tsx";
-import Body from "./components/layout/Body.tsx";
-import ProductsPage from "./pages/products/ProductsPage.tsx";
+import CategoryPage from "./pages/products/CategoryPage.tsx";
 import ProductDetailPage from "./pages/products/ProductDetailPage.tsx";
+import ProductsPage from "./pages/products/ProductsPage.tsx";
 
 export default function App() {
   return (
@@ -27,6 +27,7 @@ export default function App() {
           <Route path="/verify-otp" element={<VerifyOtpPage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
+          <Route path="/category/:category" element={<CategoryPage />} />
         </Routes>
       </Body>
       <Footer />
