@@ -2,8 +2,9 @@
 .uts-navbar {
   background: #fff;
   border-bottom: 1px solid #eee;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  position: sticky;   /* hoặc fixed */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  /* hoặc fixed */
   top: 0;
   left: 0;
   width: 100%;
@@ -90,6 +91,7 @@
   align-items: center;
   gap: 12px;
 }
+
 .uts-icon-btn {
   background: none;
   border: none;
@@ -149,12 +151,71 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  position: relative;
+}
+
+.uts-user-dropdown {
+  position: relative;
 }
 
 .uts-username {
   font-size: 14px;
   color: #333;
   font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.uts-username:hover {
+  background-color: #f8f9fa;
+  color: #6f42c1;
+}
+
+.uts-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 200px;
+  z-index: 1001;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.uts-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+  color: #333;
+}
+
+.uts-dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #6f42c1;
+}
+
+.uts-dropdown-item i {
+  font-size: 16px;
+  width: 16px;
+  text-align: center;
+}
+
+.uts-dropdown-divider {
+  height: 1px;
+  background-color: #e9ecef;
+  margin: 4px 0;
 }
 
 .uts-btn-logout {
