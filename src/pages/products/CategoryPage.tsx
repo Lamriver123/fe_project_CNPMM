@@ -15,7 +15,7 @@ const CategoryPage = () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `http://localhost:3000/v1/api/products?category=${category}&page=${pageNum}&limit=6`
+        `http://localhost:6969/v1/api/products?category=${category}&page=${pageNum}&limit=6`
       );
       if (!res.ok) throw new Error("Failed to fetch products");
 
