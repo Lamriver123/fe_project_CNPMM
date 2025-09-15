@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../redux/authSlice.ts";
 import type { RootState } from "../../redux/store.ts";
 import "./Navbar.css";
+import { useCart } from "../../hooks/useCart.ts";
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const Navbar: React.FC = () => {
   const { user, token } = useSelector((state: RootState) => state.auth);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { cart } = useCart();
 
   // Đóng khi người dùng click ra ngoài Dropdown
   useEffect(() => {
@@ -43,9 +45,17 @@ const Navbar: React.FC = () => {
     setIsDropdownOpen(false);
   };
 
+  const handleCartClick = () => {
+    navigate("/cart");
+    setIsDropdownOpen(false);
+  };
+
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
+
+  const { data } = cart || { data: { items: [], totalItems: 0, totalPrice: 0 } };
+  const { totalItems } = data;
 
   return (
     <nav className="uts-navbar">
@@ -96,9 +106,9 @@ const Navbar: React.FC = () => {
           </button>
 
           {/* Cart */}
-          <button className="uts-icon-btn position-relative" aria-label="Cart">
+          <button className="uts-icon-btn position-relative" aria-label="Cart" onClick={handleCartClick}>
             <i className="bi bi-cart"></i>
-            <span className="uts-badge">2</span>
+            <span className="uts-badge">{totalItems}</span>
           </button>
 
           {/* Auth buttons or User info */}

@@ -17,9 +17,6 @@ interface ProductCardProps {
   formatPrice: (price: number) => string;
 }
 
-
-
-
 export default function ProductCard({ product, formatPrice }: ProductCardProps) {
   const navigate = useNavigate();
 
@@ -30,7 +27,7 @@ export default function ProductCard({ product, formatPrice }: ProductCardProps) 
   return (
     <div className="product-card" onClick={handleCardClick}>
       <div className="product-image">
-        <img src={product.images[0]} alt={product.name} />
+        <img src={product.images[0].url} alt={product.name} />
         {product.isNew && <span className="badge badge-new">Mới</span>}
         {product.isHot && <span className="badge badge-hot">Hot</span>}
         <div className="product-actions">
@@ -45,7 +42,7 @@ export default function ProductCard({ product, formatPrice }: ProductCardProps) 
       </div>
       <div className="product-info">
         <h3 className="product-name">{product.name}</h3>
-        <div className="product-category">{product.category}</div>
+        <div className="product-category">{product.category.name}</div>
         <div className="product-price">
           <span className="current-price">{formatPrice(product.price)}</span>
           {product.originalPrice && (
