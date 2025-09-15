@@ -1,55 +1,64 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom"; // để lấy category từ URL
+import { useParams } from "react-router-dom"; // lấy slug từ URL
 import ProductsSection from "../../components/products/ProductsSection.tsx";
 import { Product } from "../../types/Product.ts";
 import { formatPrice } from "../../utils/format.ts";
+import { CategoryApi } from "../../api/categoryApi.ts";
+import { get } from "http";
+
 
 const CategoryPage = () => {
-  const { category } = useParams(); // ví dụ: /category/Ao
+  const { slug } = useParams(); // ví dụ: /category/ao
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
   const fetchProducts = async (pageNum: number) => {
-    try {
-      setLoading(true);
-      const res = await fetch(
-        `http://localhost:6969/v1/api/products?category=${category}&page=${pageNum}&limit=6`
-      );
-      if (!res.ok) throw new Error("Failed to fetch products");
+  if (!slug) return;
+  try {
+    console.log('>>> Fetching products for category:', slug, 'page:', pageNum);
+    setLoading(true);
+    const res = await CategoryApi.getProductsByCategoryPagination(slug, pageNum, 6);
+    setProducts(res.data || []);
+    setTotalPages(res.pagination.totalPages || 1);
+  } catch (err: any) {
+    console.error("Error fetching products by category:", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
-      const data = await res.json();
-      // giả sử API trả về { data: [], totalPages: 5 }
-      setProducts(data.data || []);
-      setTotalPages(data.pagination.totalPages || 1);
-    } catch (err) {
-      console.error("Error fetching products by category:", err);
-    } finally {
-      setLoading(false);
-    }
+  const getCategoryNameFromSlug = (slug: string) => {
+    // Tách theo dấu gạch ngang
+    const parts = slug.split("-");
+    // Bỏ cái id cuối cùng
+    parts.pop();
+    // Ghép lại thành tên
+    return parts.join(" ");
   };
 
   useEffect(() => {
+    console.log("CategoryPage mounted, slug =", slug, "page =", page);
     fetchProducts(page);
-  }, [category, page]);
+  }, [slug, page]);
 
   if (loading) return <p>Đang tải sản phẩm...</p>;
 
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">
-        Danh mục: {category}
+        Danh mục: {getCategoryNameFromSlug(slug || "")}
       </h1>
 
       <ProductsSection
-        title={`Sản phẩm trong ${category}`}
+        title={`Sản phẩm trong ${getCategoryNameFromSlug(slug || "")}`}
         subtitle={`Trang ${page}/${totalPages}`}
         products={products}
         formatPrice={formatPrice}
       />
 
-      {/* Pagination controls */}
+      {/* Pagination */}
       <div className="flex justify-center gap-4 mt-6">
         <button
           onClick={() => setPage((p) => Math.max(1, p - 1))}

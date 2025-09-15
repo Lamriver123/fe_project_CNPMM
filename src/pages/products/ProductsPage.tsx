@@ -3,22 +3,21 @@ import { useNavigate } from "react-router-dom";
 import ProductsSection from "../../components/products/ProductsSection.tsx";
 import { Product } from "../../types/Product.ts";
 import { formatPrice } from "../../utils/format.ts";
-
+import { productApi } from "../../api/productApi.ts";
+import { Category } from "../../types/Category.ts";
+import { CategoryApi } from "../../api/categoryApi.ts";
 const ProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<string[]>([]); // 👈 danh mục fetch từ BE
+  const [categories, setCategories] = useState<Category[]>([]); // 👈 danh mục fetch từ BE
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
-  // 📌 fetch products
   const fetchProducts = async () => {
     try {
-      const res = await fetch("http://localhost:6969/v1/api/products?page=1");
-      if (!res.ok) throw new Error("Failed to fetch products");
-      const data = await res.json();
-      setProducts(data.data || []);
+      const res = await productApi.getProducts(1, 100); // Lấy tối đa 100 sản phẩm
+      setProducts(res.data || []);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -26,13 +25,10 @@ const ProductsPage = () => {
     }
   };
 
-  // 📌 fetch categories
   const fetchCategories = async () => {
     try {
-      const res = await fetch("http://localhost:6969/v1/api/products/categories");
-      if (!res.ok) throw new Error("Failed to fetch categories");
-      const data = await res.json();
-      setCategories(data.data || []);
+      const data = await CategoryApi.getCategories();
+      setCategories(data || []);
     } catch (err) {
       console.error("Error fetching categories:", err);
     }
@@ -81,8 +77,8 @@ const ProductsPage = () => {
         -- Chọn category --
       </option>
       {categories.map((cate) => (
-        <option key={cate} value={cate}>
-          {cate}
+        <option key={cate._id} value={`${cate.slug}-${cate._id}`}>
+          {cate.name}
         </option>
       ))}
     </select>
