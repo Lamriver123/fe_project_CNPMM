@@ -52,16 +52,18 @@
 
 .product-image {
   position: relative;
-  height: 250px;
+  width: 100%;
+  aspect-ratio: 1 / 1; /* ảnh vuông */
   overflow: hidden;
+  background: #f9f9f9;
 }
 
 .product-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
 }
+
 
 .product-card:hover .product-image img {
   transform: scale(1.1);

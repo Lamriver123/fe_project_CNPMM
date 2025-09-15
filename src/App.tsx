@@ -17,6 +17,7 @@ import ProductDetailPage from "./pages/products/ProductDetailPage.tsx";
 import ProductsPage from "./pages/products/ProductsPage.tsx";
 import ProfilePage from "./pages/profile/ProfilePage.tsx";
 import { setToken, updateUser } from "./redux/authSlice.ts";
+import OrdersPage from "./pages/Order/OrdersPage.tsx";
 export default function App() {
   const dispatch = useDispatch();
 
@@ -63,6 +64,7 @@ export default function App() {
           <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/profile" element={<ProfilePage />} />
 
+          <Route path="/orders" element={<OrdersPage />} />
           <Route path="/cart" element={<CartPage />} />
         </Routes>
       </Body>

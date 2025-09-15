@@ -1,6 +1,6 @@
 .header {
   background: url("https://saigoner.net/wp-content/uploads/2021/01/Untitled-design-1200x560.jpg") no-repeat center/cover;
-  min-height: 20vh;
+  min-height: 300px;
   display: flex;
   justify-content: center;
   align-items: center;
