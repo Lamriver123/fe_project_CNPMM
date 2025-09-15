@@ -15,7 +15,7 @@ const ProductsPage = () => {
   // 📌 fetch products
   const fetchProducts = async () => {
     try {
-      const res = await fetch("http://localhost:3000/v1/api/products?page=1");
+      const res = await fetch("http://localhost:6969/v1/api/products?page=1");
       if (!res.ok) throw new Error("Failed to fetch products");
       const data = await res.json();
       setProducts(data.data || []);
@@ -29,7 +29,7 @@ const ProductsPage = () => {
   // 📌 fetch categories
   const fetchCategories = async () => {
     try {
-      const res = await fetch("http://localhost:3000/v1/api/products/categories");
+      const res = await fetch("http://localhost:6969/v1/api/products/categories");
       if (!res.ok) throw new Error("Failed to fetch categories");
       const data = await res.json();
       setCategories(data.data || []);
