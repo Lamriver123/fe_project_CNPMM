@@ -26,7 +26,7 @@ export default function ProductsSection({
         <div className="products-grid">
           {products.map((product) => (
             <ProductCard
-              key={product.id}
+              key={product._id}
               product={product}
               formatPrice={formatPrice}
             />

@@ -12,12 +12,12 @@ import LoginPage from "./pages/auth/LoginPage.tsx";
 import RegisterPage from "./pages/auth/RegisterPage.tsx";
 import VerifyOtpPage from "./pages/auth/VerifyOtpPage.tsx";
 import CartPage from "./pages/cart/CartPage.tsx";
+import OrdersPage from "./pages/Order/OrdersPage.tsx";
 import CategoryPage from "./pages/products/CategoryPage.tsx";
 import ProductDetailPage from "./pages/products/ProductDetailPage.tsx";
 import ProductsPage from "./pages/products/ProductsPage.tsx";
 import ProfilePage from "./pages/profile/ProfilePage.tsx";
 import { setToken, updateUser } from "./redux/authSlice.ts";
-import OrdersPage from "./pages/Order/OrdersPage.tsx";
 export default function App() {
   const dispatch = useDispatch();
 
@@ -59,7 +59,7 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/verify-otp" element={<VerifyOtpPage />} />
           <Route path="/products" element={<ProductsPage />} />
-          <Route path="/products/:id" element={<ProductDetailPage />} />
+          <Route path="/products/:slug" element={<ProductDetailPage />} />
 
           <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/profile" element={<ProfilePage />} />

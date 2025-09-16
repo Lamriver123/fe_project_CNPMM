@@ -21,8 +21,9 @@ export default function ProductCard({ product, formatPrice }: ProductCardProps) 
   const navigate = useNavigate();
 
   const handleCardClick = () => {
-    navigate(`/products/1`); // Thay '1' bằng product.id khi có dữ liệu thật ${product.id}
-  }
+    console.log("Product cart with slug and id: ", product.slug, product._id)
+  navigate(`/products/${product.slug}-${product._id}`);
+};
 
   return (
     <div className="product-card" onClick={handleCardClick}>
