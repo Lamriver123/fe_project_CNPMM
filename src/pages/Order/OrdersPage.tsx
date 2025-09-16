@@ -1,131 +1,93 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { orderApi } from "../../api/orderApi.ts";
+import { Order } from "../../types/Order";
+import { toast } from "react-toastify";
 import "./OrdersPage.css";
 
 type OrderStatus =
-  | "NEW"
-  | "CONFIRMED"
-  | "PREPARING"
-  | "DELIVERING"
-  | "COMPLETED"
-  | "CANCELLED";
-
-interface Order {
-  id: string;
-  date: string;
-  total: number;
-  status: OrderStatus;
-  items: {
-    name: string;
-    qty: number;
-    price: number;
-    image: string;
-  }[];
-}
-
-const orders: Order[] = [
-  {
-    id: "DH001",
-    date: "2025-09-10",
-    total: 1250000,
-    status: "DELIVERING",
-    items: [
-      {
-        name: "Áo thun nam UTEShop",
-        qty: 2,
-        price: 250000,
-        image:
-          "https://yeepvn.sgp1.digitaloceanspaces.com/2023/03/5e5810c08b119e845934bc8348a71aef.jpg",
-      },
-      {
-        name: "Giày sneaker trắng",
-        qty: 1,
-        price: 750000,
-        image:
-            "https://yeepvn.sgp1.digitaloceanspaces.com/2023/03/5e5810c08b119e845934bc8348a71aef.jpg",
-        },
-    ],
-  },
-  {
-    id: "DH002",
-    date: "2025-09-05",
-    total: 450000,
-    status: "COMPLETED",
-    items: [
-      {
-        name: "Tai nghe Bluetooth",
-        qty: 1,
-        price: 450000,
-        image:
-          "https://yeepvn.sgp1.digitaloceanspaces.com/2023/03/5e5810c08b119e845934bc8348a71aef.jpg",
-      },
-    ],
-  },
-  {
-    id: "DH003",
-    date: "2025-09-01",
-    total: 300000,
-    status: "CANCELLED",
-    items: [
-      {
-        name: "Balo laptop",
-        qty: 1,
-        price: 300000,
-        image:
-          "https://yeepvn.sgp1.digitaloceanspaces.com/2023/03/5e5810c08b119e845934bc8348a71aef.jpg",
-      },
-    ],
-  },
-  {
-    id: "DH004",
-    date: "2025-09-12",
-    total: 600000,
-    status: "NEW",
-    items: [
-      {
-        name: "Sách lập trình React",
-        qty: 2,
-        price: 300000,
-        image:
-          "https://yeepvn.sgp1.digitaloceanspaces.com/2023/03/5e5810c08b119e845934bc8348a71aef.jpg",
-      },
-    ],
-  },
-];
+  | "pending"
+  | "confirmed"
+  | "preparing"
+  | "delivering"
+  | "delivered"
+  | "cancelled";
 
 const statusText: Record<OrderStatus, string> = {
-  NEW: "Chờ xác nhận",
-  CONFIRMED: "Đã xác nhận",
-  PREPARING: "Chuẩn bị hàng",
-  DELIVERING: "Đang giao",
-  COMPLETED: "Hoàn thành",
-  CANCELLED: "Đã hủy",
+  pending: "Chờ xác nhận",
+  confirmed: "Đã xác nhận",
+  preparing: "Chuẩn bị hàng",
+  delivering: "Đang giao",
+  delivered: "Hoàn thành",
+  cancelled: "Đã hủy",
 };
 
-const tabOptions: { key: string; label: string; filter?: OrderStatus[] }[] = [
+// key dùng cho UI, filter gửi API
+const tabOptions: { key: string; label: string; apiStatus?: string }[] = [
   { key: "all", label: "Tất cả" },
-  { key: "new", label: "Chờ xác nhận", filter: ["NEW", "CONFIRMED"] },
-  { key: "preparing", label: "Chuẩn bị hàng", filter: ["PREPARING"] },
-  { key: "delivering", label: "Đang giao", filter: ["DELIVERING"] },
-  { key: "completed", label: "Hoàn thành", filter: ["COMPLETED"] },
-  { key: "cancelled", label: "Đã hủy", filter: ["CANCELLED"] },
+  { key: "new", label: "Chờ xác nhận", apiStatus: "pending" },
+  { key: "preparing", label: "Chuẩn bị hàng", apiStatus: "preparing" },
+  { key: "delivering", label: "Đang giao", apiStatus: "delivering" },
+  { key: "completed", label: "Hoàn thành", apiStatus: "delivered" },
+  { key: "cancelled", label: "Đã hủy", apiStatus: "cancelled" },
 ];
 
 const OrdersPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("all");
+  const [orders, setOrders] = useState<Order[]>([]);
   const [expandedOrders, setExpandedOrders] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Gọi API mỗi khi đổi tab
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const tab = tabOptions.find((t) => t.key === activeTab);
+        const statusParam = tab?.apiStatus;
+        const res = await orderApi.getOrder(statusParam);
+        setOrders(res.data.orders);
+      } catch (err: any) {
+        console.error(err);
+        setError("Không thể tải danh sách đơn hàng");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrders();
+  }, [activeTab]);
+
+  const handleUpdateStatus = async (orderId: string, currentStatus: string) => {
+    try {
+      toast.info(currentStatus);
+      await orderApi.updateStatus(orderId, currentStatus);
+      toast.success("Cập nhật đơn hàng thành công!");
+      const res = await orderApi.getOrder(currentStatus);
+      setOrders(res.data.orders);
+    } catch (err) {
+      console.error(err);
+      toast.error("Cập nhật thất bại!");
+    }
+  };
   const toggleExpand = (id: string) => {
     setExpandedOrders((prev) =>
       prev.includes(id) ? prev.filter((o) => o !== id) : [...prev, id]
     );
   };
 
-  const filteredOrders =
-    activeTab === "all"
-      ? orders
-      : orders.filter((o) =>
-          tabOptions.find((t) => t.key === activeTab)?.filter?.includes(o.status)
-        );
+  if (loading) {
+    return <div className="orders-page">Đang tải đơn hàng...</div>;
+  }
+  if (error) {
+    return (
+      <div className="orders-page">
+        <p>{error}</p>
+        <button onClick={() => setActiveTab(activeTab)}>Thử lại</button>
+      </div>
+    );
+  }
 
   return (
     <div className="orders-page">
@@ -144,21 +106,21 @@ const OrdersPage: React.FC = () => {
         ))}
       </div>
 
-      {/* Order List */}
+      {/* Danh sách đơn hàng */}
       <div className="order-list">
-        {filteredOrders.length === 0 ? (
+        {orders.length === 0 ? (
           <p className="empty-text">Chưa có đơn hàng nào.</p>
         ) : (
-          filteredOrders.map((order) => {
-            const isExpanded = expandedOrders.includes(order.id);
+          orders.map((order) => {
+            const isExpanded = expandedOrders.includes(order._id);
             const showSeeMore = order.items.length > 1;
 
             return (
-              <div className="order-card" key={order.id}>
+              <div className="order-card" key={order._id}>
                 <div className="order-header">
-                  <span>Mã đơn: {order.id}</span>
-                  <span className={`status ${order.status.toLowerCase()}`}>
-                    {statusText[order.status]}
+                  <span>Mã đơn: {order._id}</span>
+                  <span className={`status ${order.statusOrder?.toLowerCase()}`}>
+                    {statusText[order.statusOrder as OrderStatus] || order.statusOrder}
                   </span>
                 </div>
 
@@ -166,18 +128,43 @@ const OrdersPage: React.FC = () => {
                   {(isExpanded ? order.items : order.items.slice(0, 1)).map(
                     (item, index) => (
                       <div className="order-item" key={index}>
-                        <img src={item.image} alt={item.name} />
+                        <img src={item.product.images[0]?.url} alt={item.product.name} />
                         <div className="item-info">
-                          <p className="name">{item.name}</p>
-                          <p className="qty">Số lượng: {item.qty}</p>
+                          <p className="name">{item.product.name}</p>
+                          <p className="qty">Số lượng: {item.quantity}</p>
                           <p className="price">
-                            {item.price.toLocaleString()} đ
+                            {(item.product.price * item.quantity).toLocaleString()} đ
                           </p>
-                          {/* Actions cho từng sản phẩm (COMPLETED) */}
-                          {order.status === "COMPLETED" && (
+                          {order.statusOrder === "delivered" && (
                             <div className="item-actions">
-                              <button className="btn small">Đánh giá</button>
-                              <button className="btn small">Mua lại</button>
+                              {!item.isCommented && (
+                                <button
+                                  className="btn btn-warning btn-sm me-2 bg-opacity-25 hover-bg-opacity-50"
+                                  style={{ backgroundColor: 'rgba(255,193,7,0.25)', borderColor: '#ffc107', color: '#856404' }}
+                                >
+                                  <i className="bi bi-star me-1"></i>
+                                  Đánh giá
+                                </button>
+                              )}
+                              <button
+                                className="btn btn-success btn-sm bg-opacity-25 hover-bg-opacity-50"
+                                style={{ backgroundColor: 'rgba(25,135,84,0.25)', borderColor: '#198754', color: '#0f5132' }}
+                              >
+                                <i className="bi bi-bag-plus me-1"></i>
+                                Mua lại
+                              </button>
+                            </div>
+                          )}
+
+                          {order.statusOrder === "cancelled" && (
+                            <div className="item-actions">
+                              <button
+                                className="btn btn-secondary btn-sm bg-opacity-25 hover-bg-opacity-50"
+                                style={{ backgroundColor: 'rgba(108,117,125,0.25)', borderColor: '#6c757d', color: '#41464b' }}
+                              >
+                                <i className="bi bi-arrow-clockwise me-1"></i>
+                                Mua lại
+                              </button>
                             </div>
                           )}
                         </div>
@@ -187,7 +174,7 @@ const OrdersPage: React.FC = () => {
                   {showSeeMore && (
                     <button
                       className="see-more-btn"
-                      onClick={() => toggleExpand(order.id)}
+                      onClick={() => toggleExpand(order._id)}
                     >
                       {isExpanded ? "Thu gọn" : "Xem thêm"}
                     </button>
@@ -195,23 +182,25 @@ const OrdersPage: React.FC = () => {
                 </div>
 
                 <div className="order-footer">
-                  <span>Ngày đặt: {order.date}</span>
+                  <span>
+                    Ngày đặt: {new Date(order.createdAt).toLocaleDateString()}
+                  </span>
                   <span className="total">
-                    Tổng: {order.total.toLocaleString()} đ
+                    Tổng: {order.totalPrice.toLocaleString()} đ
                   </span>
                 </div>
 
-                {/* Action buttons theo trạng thái đơn */}
                 <div className="order-actions">
-                  {order.status === "DELIVERING" && (
-                    <button className="btn primary">Đã nhận hàng</button>
+                  {order.statusOrder === "delivering" && order.isDelivered === true && (
+                    <button className="btn primary"
+                    onClick={() => handleUpdateStatus(order._id, order.statusOrder)}>Đã nhận hàng</button>
                   )}
-                  {(order.status === "NEW" || order.status === "CONFIRMED") && (
-                    <button className="btn danger">Hủy đơn hàng</button>
+                  {(order.statusOrder === "pending" && 
+                    <button className="btn danger"
+                    onClick={() => handleUpdateStatus(order._id, order.statusOrder)}
+                    >Hủy đơn hàng</button>
                   )}
-                  {order.status === "CANCELLED" && (
-                    <button className="btn secondary">Mua lại</button>
-                  )}
+                  
                 </div>
               </div>
             );

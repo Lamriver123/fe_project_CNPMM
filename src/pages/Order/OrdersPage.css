@@ -67,11 +67,11 @@
   font-size: 14px;
 }
 
-.status.new { background: #e3f2fd; color: #1976d2; }
+.status.pending { background: #f3f3f3; color: #e7e42d; }
 .status.confirmed { background: #e8f5e9; color: #2e7d32; }
 .status.preparing { background: #fff8e1; color: #f9a825; }
 .status.delivering { background: #e1f5fe; color: #0288d1; }
-.status.completed { background: #e8f5e9; color: #2e7d32; }
+.status.delivered { background: #e8f5e9; color: #2e7d32; }
 .status.cancelled { background: #ffebee; color: #c62828; }
 
 .order-items {

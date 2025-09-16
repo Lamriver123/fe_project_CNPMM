@@ -5,7 +5,7 @@ import { CartItem as CartItemType } from "../../types/Cart.ts";
 import CartItem from "../../components/cart/CartItem.tsx";
 import EmptyCart from "../../components/cart/EmptyCart.tsx";
 import { useCart } from "../../hooks/useCart.ts";
-import { paymentApi } from "../../api/orderApi.ts";   
+import { paymentApi } from "../../api/paymentApi.ts";   
 import { Modal } from "antd";   // 👉 dùng popup
 import "./CartPage.css";
 
