@@ -34,15 +34,15 @@ const orders: Order[] = [
         qty: 2,
         price: 250000,
         image:
-          "https://down-vn.img.susercontent.com/file/sg-11134201-22120-zj9kmf7ce8lv52",
+          "https://yeepvn.sgp1.digitaloceanspaces.com/2023/03/5e5810c08b119e845934bc8348a71aef.jpg",
       },
       {
         name: "Giày sneaker trắng",
         qty: 1,
         price: 750000,
         image:
-          "https://down-vn.img.susercontent.com/file/sg-11134201-22110-fp9k31kfxqlv0d",
-      },
+            "https://yeepvn.sgp1.digitaloceanspaces.com/2023/03/5e5810c08b119e845934bc8348a71aef.jpg",
+        },
     ],
   },
   {
@@ -56,7 +56,7 @@ const orders: Order[] = [
         qty: 1,
         price: 450000,
         image:
-          "https://down-vn.img.susercontent.com/file/sg-11134201-22120-f2xopz6gxxlvc0",
+          "https://yeepvn.sgp1.digitaloceanspaces.com/2023/03/5e5810c08b119e845934bc8348a71aef.jpg",
       },
     ],
   },
@@ -71,7 +71,7 @@ const orders: Order[] = [
         qty: 1,
         price: 300000,
         image:
-          "https://down-vn.img.susercontent.com/file/sg-11134201-22110-6s82h6pce8lvc2",
+          "https://yeepvn.sgp1.digitaloceanspaces.com/2023/03/5e5810c08b119e845934bc8348a71aef.jpg",
       },
     ],
   },
@@ -86,7 +86,7 @@ const orders: Order[] = [
         qty: 2,
         price: 300000,
         image:
-          "https://down-vn.img.susercontent.com/file/sg-11134201-22120-6y4ab7hce8lv00",
+          "https://yeepvn.sgp1.digitaloceanspaces.com/2023/03/5e5810c08b119e845934bc8348a71aef.jpg",
       },
     ],
   },
