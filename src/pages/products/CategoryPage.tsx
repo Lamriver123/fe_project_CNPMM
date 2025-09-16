@@ -5,6 +5,7 @@ import { Product } from "../../types/Product.ts";
 import { formatPrice } from "../../utils/format.ts";
 import { CategoryApi } from "../../api/categoryApi.ts";
 import { get } from "http";
+import { getCategoryNameFromSlug } from "../../utils/categoryUtils.ts";
 
 
 const CategoryPage = () => {
@@ -17,7 +18,7 @@ const CategoryPage = () => {
   const fetchProducts = async (pageNum: number) => {
   if (!slug) return;
   try {
-    console.log('>>> Fetching products for category:', slug, 'page:', pageNum);
+    console.log('>>> Fetching products for category:', slug ,' page:', pageNum);
     setLoading(true);
     const res = await CategoryApi.getProductsByCategoryPagination(slug, pageNum, 6);
     setProducts(res.data || []);
@@ -29,14 +30,7 @@ const CategoryPage = () => {
   }
 };
 
-  const getCategoryNameFromSlug = (slug: string) => {
-    // Tách theo dấu gạch ngang
-    const parts = slug.split("-");
-    // Bỏ cái id cuối cùng
-    parts.pop();
-    // Ghép lại thành tên
-    return parts.join(" ");
-  };
+
 
   useEffect(() => {
     console.log("CategoryPage mounted, slug =", slug, "page =", page);

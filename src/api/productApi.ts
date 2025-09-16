@@ -14,7 +14,7 @@ export const productApi = {
     return await axiosClient.get('/products', { params });
   },
 
-  getProductById: async (id: string): Promise<Product> => {
+  getProductById: async (id: string): Promise<{data: Product}> => {
     return await axiosClient.get(`/products/${id}`);
   },
 

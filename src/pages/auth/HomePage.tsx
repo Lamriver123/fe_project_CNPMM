@@ -4,7 +4,8 @@ import ProductsSection from "../../components/products/ProductsSection.tsx";
 import { Product } from "../../types/Product.ts";
 import "./HomePage.css";
 import { productApi } from "../../api/productApi.ts";
-
+import { CategoryApi } from "../../api/categoryApi.ts";
+import { Category } from "../../types/Category.ts";
 // interface Product {
 //   id: number;
 //   name: string;
@@ -128,19 +129,13 @@ import { productApi } from "../../api/productApi.ts";
 //   }
 // ];
 
-const categories = [
-  { name: "Tất cả", value: "all" },
-  { name: "Balo", value: "Balo" },
-  { name: "Áo", value: "Áo" },
-  { name: "Nón", value: "Nón" },
-  { name: "Túi", value: "Túi" },
-  { name: "Phụ kiện", value: "Phụ kiện" }
-];
+
 
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategory] = useState<Category[]>([]);
 
   const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory === "all" || product.category.name === selectedCategory;
@@ -156,11 +151,16 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    const res = async () => {
+    const productRes = async () => {
       const response = await productApi.getProducts();
       setProducts(response.data || []);
     }
-    res();
+    productRes();
+    const cateRes = async () => {
+      const response = await CategoryApi.getCategories();
+      setCategory(response)
+    }
+    cateRes();
   }, []);
 
   return (
@@ -226,9 +226,9 @@ export default function HomePage() {
             <div className="category-filters">
               {categories.map((category) => (
                 <button
-                  key={category.value}
-                  className={`category-btn ${selectedCategory === category.value ? 'active' : ''}`}
-                  onClick={() => setSelectedCategory(category.value)}
+                  key={category.name}
+                  className={`category-btn ${selectedCategory === category.name ? 'active' : ''}`}
+                  onClick={() => setSelectedCategory(category.name)}
                 >
                   {category.name}
                 </button>
