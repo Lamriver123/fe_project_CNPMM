@@ -45,8 +45,16 @@ export const useCart = () => {
             console.log('>>> Updated cart response:', response);
             fetchCart();
         } catch (err: any) {
-            setError(err.message || 'Failed to update quantity');
-            throw err;
+            // setError(err.message || 'Failed to update quantity');
+            // throw err;
+            if (err.response) {
+            // Lỗi từ BE trả về
+                alert(err.response.data.message || 'Failed to update quantity');
+             //   setError(err.response.data.message || 'Failed to update quantity');
+            } else {
+                // Lỗi network hoặc lỗi khác
+                setError(err.message || 'Failed to update quantity');
+            }
         }
     };
 
