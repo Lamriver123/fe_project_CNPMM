@@ -1,5 +1,5 @@
 // src/components/Navbar.tsx
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, use } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../redux/authSlice.ts";
@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
   const { user, token } = useSelector((state: RootState) => state.auth);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { cart } = useCart();
+  const { cart, cartCount } = useCart();
 
   // Đóng khi người dùng click ra ngoài Dropdown
   useEffect(() => {
@@ -108,7 +108,7 @@ const Navbar: React.FC = () => {
           {/* Cart */}
           <button className="uts-icon-btn position-relative" aria-label="Cart" onClick={handleCartClick}>
             <i className="bi bi-cart"></i>
-            <span className="uts-badge">{totalItems}</span>
+            <span className="uts-badge">{cartCount}</span>
           </button>
 
           {/* Auth buttons or User info */}

@@ -6,9 +6,11 @@ interface CartItemProps {
     item: CartItemType;
     onUpdateQuantity: (productId: string, newQuantity: number) => void;
     onRemoveItem: (productId: string) => void;
+    checked: boolean;
+    onToggle: () => void;
 }
 
-export default function CartItem({ item, onUpdateQuantity, onRemoveItem }: CartItemProps) {
+export default function CartItem({ item, onUpdateQuantity, onRemoveItem, checked, onToggle }: CartItemProps) {
     const { product, quantity } = item;
 
     // Tính giá sau giảm giá
@@ -25,6 +27,10 @@ export default function CartItem({ item, onUpdateQuantity, onRemoveItem }: CartI
 
     return (
         <div className="cart-item">
+
+            <input type="checkbox" className="cart-item-select" checked={checked} onChange={onToggle} />
+
+
             <div className="cart-item-image">
                 <img
                     src={product.images[0]?.url || '/placeholder-image.jpg'}

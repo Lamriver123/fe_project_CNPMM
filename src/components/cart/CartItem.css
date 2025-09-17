@@ -185,3 +185,42 @@
         align-self: flex-end;
     }
 }
+
+.cart-item-select {
+    margin-right: 20px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    /* bo góc, nếu muốn hình tròn thì cho 50% */
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Hover */
+.cart-item-select:hover {
+    border-color: #4cafef;
+    box-shadow: 0 0 3px rgba(0, 150, 255, 0.5);
+}
+
+/* Khi checked */
+.cart-item-select:checked {
+    background-color: #4cafef;
+    border-color: #4cafef;
+}
+
+/* Tạo icon check */
+.cart-item-select:checked::after {
+    content: "✓";
+    font-size: 13px;
+    color: #fff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+}

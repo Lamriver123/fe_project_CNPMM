@@ -12,6 +12,7 @@ export interface Product {
   price: number;
   discount: number;
   images: ProductImage[];
+  slug: string;
 }
 
 export interface OrderItem {

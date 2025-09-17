@@ -5,7 +5,7 @@ import { CartItem as CartItemType } from "../../types/Cart.ts";
 import CartItem from "../../components/cart/CartItem.tsx";
 import EmptyCart from "../../components/cart/EmptyCart.tsx";
 import { useCart } from "../../hooks/useCart.ts";
-import { paymentApi } from "../../api/paymentApi.ts";   
+import { paymentApi } from "../../api/paymentApi.ts";
 import { Modal } from "antd";   // 👉 dùng popup
 import "./CartPage.css";
 
@@ -13,10 +13,11 @@ const CartPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { cart, loading, error, updateQuantity, removeItem, clearCart, refetch } = useCart();
-    const [modal, setModal] = useState<{visible: boolean; message: string}>({
+    const [modal, setModal] = useState<{ visible: boolean; message: string }>({
         visible: false,
         message: "",
     });
+    const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
     // ✅ Khi load CartPage, kiểm tra status từ query string
     useEffect(() => {
@@ -48,9 +49,25 @@ const CartPage = () => {
         }
     }, [location, navigate]);
 
+    const handleToggleItem = (productId: string) => {
+        setSelectedItems(prev =>
+            prev.includes(productId)
+                ? prev.filter(id => id !== productId)
+                : [...prev, productId]
+        );
+    };
+
+    const handleToggleAll = () => {
+        if (selectedItems.length === items.length) {
+            setSelectedItems([]); // bỏ chọn tất cả
+        } else {
+            setSelectedItems(items.map(item => item.product._id)); // chọn tất cả
+        }
+    };
+
     const handleCheckout = async () => {
         try {
-            const res = await paymentApi.createQr();
+            const res = await paymentApi.createQr(selectedItems);
             console.log("Thanh toán response:", res);
 
             if (res.success && res.url) {
@@ -109,6 +126,7 @@ const CartPage = () => {
 
     const { data } = cart || { data: { items: [], totalItems: 0, totalPrice: 0 } };
     const { items, totalItems, totalPrice } = data;
+    const isAllSelected = items.length > 0 && selectedItems.length === items.length;
 
     return (
         <div className="cart-page">
@@ -131,6 +149,11 @@ const CartPage = () => {
                     <div className="cart-content">
                         <div className="cart-items-section">
                             <div className="cart-items-header">
+                                <input
+                                    type="checkbox" className="custom-checkbox"
+                                    checked={isAllSelected}
+                                    onChange={handleToggleAll}
+                                />
                                 <h2>Sản phẩm trong giỏ</h2>
                                 <button
                                     className="clear-cart-btn"
@@ -148,6 +171,8 @@ const CartPage = () => {
                                         item={item}
                                         onUpdateQuantity={updateQuantity}
                                         onRemoveItem={removeItem}
+                                        checked={selectedItems.includes(item.product._id)}
+                                        onToggle={() => handleToggleItem(item.product._id)}
                                     />
                                 ))}
                             </div>

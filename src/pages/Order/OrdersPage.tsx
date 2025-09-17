@@ -147,6 +147,7 @@ const OrdersPage: React.FC = () => {
                                 </button>
                               )}
                               <button
+                                onClick={() => window.location.href = `/products/${item.product.slug}-${item.product._id}`}
                                 className="btn btn-success btn-sm bg-opacity-25 hover-bg-opacity-50"
                                 style={{ backgroundColor: 'rgba(25,135,84,0.25)', borderColor: '#198754', color: '#0f5132' }}
                               >
@@ -159,6 +160,7 @@ const OrdersPage: React.FC = () => {
                           {order.statusOrder === "cancelled" && (
                             <div className="item-actions">
                               <button
+                                onClick={() => window.location.href = `/products/${item.product.slug}-${item.product._id}`}
                                 className="btn btn-secondary btn-sm bg-opacity-25 hover-bg-opacity-50"
                                 style={{ backgroundColor: 'rgba(108,117,125,0.25)', borderColor: '#6c757d', color: '#41464b' }}
                               >
@@ -193,14 +195,14 @@ const OrdersPage: React.FC = () => {
                 <div className="order-actions">
                   {order.statusOrder === "delivering" && order.isDelivered === true && (
                     <button className="btn primary"
-                    onClick={() => handleUpdateStatus(order._id, order.statusOrder)}>Đã nhận hàng</button>
+                      onClick={() => handleUpdateStatus(order._id, order.statusOrder)}>Đã nhận hàng</button>
                   )}
-                  {(order.statusOrder === "pending" && 
+                  {(order.statusOrder === "pending" &&
                     <button className="btn danger"
-                    onClick={() => handleUpdateStatus(order._id, order.statusOrder)}
+                      onClick={() => handleUpdateStatus(order._id, order.statusOrder)}
                     >Hủy đơn hàng</button>
                   )}
-                  
+
                 </div>
               </div>
             );

@@ -239,3 +239,42 @@
         margin-bottom: 16px;
     }
 }
+
+.custom-checkbox {
+    margin-left: 20px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    /* bo góc, nếu muốn hình tròn thì cho 50% */
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Hover */
+.custom-checkbox:hover {
+    border-color: #4cafef;
+    box-shadow: 0 0 3px rgba(0, 150, 255, 0.5);
+}
+
+/* Khi checked */
+.custom-checkbox:checked {
+    background-color: #4cafef;
+    border-color: #4cafef;
+}
+
+/* Tạo icon check */
+.custom-checkbox:checked::after {
+    content: "✓";
+    font-size: 13px;
+    color: #fff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+}
