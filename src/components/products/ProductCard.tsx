@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import "./Product.css";
 import { Product } from "../../types/Product";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { profileApi } from "../../api/profileApi.ts";
 // interface Product {
 //   id: number;
 //   name: string;
@@ -19,10 +22,19 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, formatPrice }: ProductCardProps) {
   const navigate = useNavigate();
-
-  const handleCardClick = () => {
+  const { token } = useSelector((state: RootState) => state.auth);
+  const handleCardClick = async () => {
     console.log("Product cart with slug and id: ", product.slug, product._id)
-  navigate(`/products/${product.slug}-${product._id}`);
+    
+    // Add to viewed products if user is logged in
+    if (token) {
+      try {
+        await profileApi.addToViewedProducts(product._id);
+      } catch (error) {
+        console.error("Error adding to viewed products:", error);
+      }
+    }
+    navigate(`/products/${product.slug}-${product._id}`);
 };
 
   return (

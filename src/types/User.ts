@@ -10,8 +10,8 @@ export interface User {
     isActive: boolean;
     __v: number;
 
-    favProducts: [],
-    viewedProducts: []
+    favProducts: string[],
+    viewedProducts: string[]
 }
 
 export interface LoginResponse {
