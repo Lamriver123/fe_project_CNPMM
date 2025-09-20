@@ -170,7 +170,7 @@ export default function ProductDetailPage() {
           </div>
       </div>
 
-      <CommentsSection/>
+      <CommentsSection productId={product._id} />
       <ProductsSection
         title="Sản phẩm liên quan"
         products={relatedProduct ?? []}

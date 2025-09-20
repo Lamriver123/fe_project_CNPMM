@@ -70,3 +70,23 @@
   font-size: 0.8rem;
   color: #999;
 }
+
+/* ...existing styles... */
+
+.comment-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.rating {
+  color: #ffc107;
+  margin: 0.25rem 0;
+}
+
+.text-error {
+  color: #dc3545;
+  padding: 1rem;
+  text-align: center;
+}
