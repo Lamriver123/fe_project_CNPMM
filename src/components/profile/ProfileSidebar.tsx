@@ -10,6 +10,7 @@ const ProfileSidebar: React.FC<ProfileSidebarProps> = ({ activeTab, onTabChange 
         { id: 'personal', label: 'Thông tin cá nhân', icon: 'bi-person' },
         { id: 'orders', label: 'Đơn hàng của tôi', icon: 'bi-bag' },
         { id: 'favorites', label: 'Sản phẩm yêu thích', icon: 'bi-heart' },
+        { id: 'viewed', label: 'Sản phẩm đã xem', icon: 'bi-eye' },  
         { id: 'reviews', label: 'Đánh giá của tôi', icon: 'bi-star' },
         { id: 'settings', label: 'Cài đặt', icon: 'bi-gear' },
     ];

@@ -1,13 +1,15 @@
-import React, { useState } from "react";
-import { useProfile } from "../../hooks/useProfile.ts";
-import type { User } from "../../types/User";
+import { useState } from "react";
+import FavoritesCard from "../../components/profile/FavoritesCard.tsx";
+import OrdersCard from "../../components/profile/OrdersCard.tsx";
+import PersonalInfoCard from "../../components/profile/PersonalInfoCard.tsx";
+import "../../components/profile/ProfileComponents.css";
 import ProfileHeader from "../../components/profile/ProfileHeader.tsx";
 import ProfileSidebar from "../../components/profile/ProfileSidebar.tsx";
-import PersonalInfoCard from "../../components/profile/PersonalInfoCard.tsx";
 import SecurityCard from "../../components/profile/SecurityCard.tsx";
-import OrdersCard from "../../components/profile/OrdersCard.tsx";
+import { useProfile } from "../../hooks/useProfile.ts";
+import type { User } from "../../types/User";
 import "./ProfilePage.css";
-import "../../components/profile/ProfileComponents.css";
+import ViewedProductsCard from "../../components/profile/ViewedProductsCard.tsx";
 
 export default function ProfilePage() {
     const { user, loading, error, updateProfile } = useProfile();
@@ -34,6 +36,12 @@ export default function ProfilePage() {
                 return <PersonalInfoCard user={user} onUpdate={handleUpdateProfile} />;
             case 'orders':
                 return <OrdersCard />;
+            case 'favorites':
+                return <FavoritesCard favProducts={user.favProducts} />;
+            case 'viewed':
+                return <ViewedProductsCard viewedProducts={user.viewedProducts} />;
+
+
             // case 'security':
             //     return <SecurityCard />;
             default:
