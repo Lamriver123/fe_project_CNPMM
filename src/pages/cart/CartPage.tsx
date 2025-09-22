@@ -54,19 +54,19 @@ const CartPage = () => {
   }, [location, navigate]);
 
   useEffect(() => {
-  const fetchVouchers = async () => {
-    try {
-      const res = await voucherApi.getMyVouchers();
-      if (res.success) {
-        setVouchers(res.vouchers || []);
-        setUserXu(res.xu || 0); // bỏ +1
+    const fetchVouchers = async () => {
+      try {
+        const res = await voucherApi.getMyVouchers();
+        if (res.success) {
+          setVouchers(res.vouchers || []);
+          setUserXu(res.xu || 0); // bỏ +1
+        }
+      } catch (err) {
+        console.error("Error fetching vouchers:", err);
       }
-    } catch (err) {
-      console.error("Error fetching vouchers:", err);
-    }
-  };
-  fetchVouchers();
-}, []);
+    };
+    fetchVouchers();
+  }, []);
 
   const handleToggleItem = (productId: string) => {
     setSelectedItems((prev) =>
@@ -85,23 +85,23 @@ const CartPage = () => {
   };
 
   const handleCheckout = async () => {
-  try {
-    const res = await paymentApi.createQr({
-      items: selectedItems,
-      voucherCode: selectedVoucher?.code || null,
-      usedXu: Number(usedXu) || 0 // ép kiểu number
-    });
+    try {
+      const res = await paymentApi.createQr({
+        items: selectedItems,
+        voucherCode: selectedVoucher?.code || null,
+        usedXu: Number(usedXu) || 0 // ép kiểu number
+      });
 
-    if (res.success && res.url) {
-      window.location.href = res.url;
-    } else {
-      Modal.error({ title: "Lỗi", content: "Không tạo được link thanh toán" });
+      if (res.success && res.url) {
+        window.location.href = res.url;
+      } else {
+        Modal.error({ title: "Lỗi", content: "Không tạo được link thanh toán" });
+      }
+    } catch (err) {
+      console.error("Error creating QR payment:", err);
+      Modal.error({ title: "Lỗi", content: "Có lỗi xảy ra khi tạo thanh toán" });
     }
-  } catch (err) {
-    console.error("Error creating QR payment:", err);
-    Modal.error({ title: "Lỗi", content: "Có lỗi xảy ra khi tạo thanh toán" });
-  }
-};
+  };
 
   const handleContinueShopping = () => {
     navigate("/products");
@@ -132,7 +132,7 @@ const CartPage = () => {
 
   const selectedTotal = items
     .filter((i: CartItemType) => selectedItems.includes(i.product._id))
-    .reduce((sum, i) => sum + i.product.price * i.quantity, 0);
+    .reduce((sum, i) => sum + (i.product.price * (1 - (i.product.discount || 0) / 100)) * i.quantity, 0);
 
   let discount = 0;
   if (selectedVoucher) {
@@ -160,12 +160,12 @@ const CartPage = () => {
             <div className="cart-items-section">
               <div className="cart-items-header">
                 <input
-                  type="checkbox"
+                  type="checkbox" className="custom-checkbox"
                   checked={isAllSelected}
                   onChange={() => handleToggleAll(items)}
                 />
                 <h2>Sản phẩm</h2>
-                <button onClick={handleClearCart}>Xóa tất cả</button>
+                <button className="clear-cart-btn" onClick={handleClearCart}>Xóa tất cả</button>
               </div>
 
               <div className="cart-items-list">
@@ -188,10 +188,10 @@ const CartPage = () => {
                 <h3>Số xu của bạn: <b>{userXu.toLocaleString()} xu</b></h3>
                 <label>Sử dụng xu: </label>
                 <InputNumber
-                min={0}
-                max={userXu}
-                value={usedXu}
-                onChange={(value) => setUsedXu(Number(value) || 0)} // Ép kiểu number
+                  min={0}
+                  max={userXu}
+                  value={usedXu}
+                  onChange={(value) => setUsedXu(Number(value) || 0)} // Ép kiểu number
                 />
               </div>
 
