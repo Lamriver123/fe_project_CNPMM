@@ -108,6 +108,7 @@ export const useCart = () => {
             setLoading(true);
             setError(null);
             const response = await cartApi.addToCart(productId, quantity);
+            await fetchCart(); 
             setCart(response);
         } catch (err: any) {
             setError(err.message || 'Failed to add to cart');
