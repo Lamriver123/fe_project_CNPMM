@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { orderApi } from "../../api/orderApi.ts";
 import { Order } from "../../types/Order";
 import { toast } from "react-toastify";
+import ReviewModal from "../../components/comments/ReviewModal.tsx";
 import "./OrdersPage.css";
+import RewardModal from "../../components/comments/RewardModal.tsx";
 
 type OrderStatus =
   | "pending"
@@ -37,6 +39,20 @@ const OrdersPage: React.FC = () => {
   const [expandedOrders, setExpandedOrders] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [reward, setReward] = useState<any>(null);
+
+  // Modal state
+  const [reviewModal, setReviewModal] = useState<{
+    isOpen: boolean;
+    productId: string;
+    productName: string;
+    productImage: string;
+  }>({
+    isOpen: false,
+    productId: '',
+    productName: '',
+    productImage: ''
+  });
 
   // Gọi API mỗi khi đổi tab
   useEffect(() => {
@@ -88,6 +104,39 @@ const OrdersPage: React.FC = () => {
       </div>
     );
   }
+
+  const handleReview = (productId: string, productName: string, productImage: string) => {
+    setReviewModal({
+      isOpen: true,
+      productId,
+      productName,
+      productImage
+    });
+  };
+
+  const closeReviewModal = () => {
+    setReviewModal({
+      isOpen: false,
+      productId: '',
+      productName: '',
+      productImage: ''
+    });
+  };
+
+  const handleReviewSubmitted = () => {
+    // Refresh orders to update isCommented status
+    const fetchOrders = async () => {
+      try {
+        const tab = tabOptions.find((t) => t.key === activeTab);
+        const statusParam = tab?.apiStatus;
+        const res = await orderApi.getOrder(statusParam);
+        setOrders(res.data.orders);
+      } catch (err: any) {
+        console.error(err);
+      }
+    };
+    fetchOrders();
+  };
 
   return (
     <div className="orders-page">
@@ -141,12 +190,14 @@ const OrdersPage: React.FC = () => {
                                 <button
                                   className="btn btn-warning btn-sm me-2 bg-opacity-25 hover-bg-opacity-50"
                                   style={{ backgroundColor: 'rgba(255,193,7,0.25)', borderColor: '#ffc107', color: '#856404' }}
+                                  onClick={() => handleReview(item.product._id, item.product.name, item.product.images[0]?.url || '')}
                                 >
                                   <i className="bi bi-star me-1"></i>
                                   Đánh giá
                                 </button>
                               )}
                               <button
+                                onClick={() => window.location.href = `/products/${item.product.slug}-${item.product._id}`}
                                 className="btn btn-success btn-sm bg-opacity-25 hover-bg-opacity-50"
                                 style={{ backgroundColor: 'rgba(25,135,84,0.25)', borderColor: '#198754', color: '#0f5132' }}
                               >
@@ -159,6 +210,7 @@ const OrdersPage: React.FC = () => {
                           {order.statusOrder === "cancelled" && (
                             <div className="item-actions">
                               <button
+                                onClick={() => window.location.href = `/products/${item.product.slug}-${item.product._id}`}
                                 className="btn btn-secondary btn-sm bg-opacity-25 hover-bg-opacity-50"
                                 style={{ backgroundColor: 'rgba(108,117,125,0.25)', borderColor: '#6c757d', color: '#41464b' }}
                               >
@@ -193,20 +245,35 @@ const OrdersPage: React.FC = () => {
                 <div className="order-actions">
                   {order.statusOrder === "delivering" && order.isDelivered === true && (
                     <button className="btn primary"
-                    onClick={() => handleUpdateStatus(order._id, order.statusOrder)}>Đã nhận hàng</button>
+                      onClick={() => handleUpdateStatus(order._id, order.statusOrder)}>Đã nhận hàng</button>
                   )}
-                  {(order.statusOrder === "pending" && 
+                  {(order.statusOrder === "pending" &&
                     <button className="btn danger"
-                    onClick={() => handleUpdateStatus(order._id, order.statusOrder)}
+                      onClick={() => handleUpdateStatus(order._id, order.statusOrder)}
                     >Hủy đơn hàng</button>
                   )}
-                  
+
                 </div>
               </div>
             );
           })
         )}
       </div>
+
+      {/* Review Modal */}
+      <ReviewModal
+        isOpen={reviewModal.isOpen}
+        onClose={closeReviewModal}
+        productId={reviewModal.productId}
+        productName={reviewModal.productName}
+        productImage={reviewModal.productImage}
+        onSubmitted={handleReviewSubmitted}
+        onReward={(reward) => setReward(reward)}
+      />
+      {/* Reward Modal */}
+      {reward && (
+        <RewardModal reward={reward} onClose={() => setReward(null)} />
+      )}
     </div>
   );
 };

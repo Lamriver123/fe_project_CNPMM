@@ -9,6 +9,9 @@ export interface User {
     username: string;
     isActive: boolean;
     __v: number;
+
+    favProducts: string[],
+    viewedProducts: string[]
 }
 
 export interface LoginResponse {

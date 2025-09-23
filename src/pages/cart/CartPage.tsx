@@ -5,176 +5,254 @@ import { CartItem as CartItemType } from "../../types/Cart.ts";
 import CartItem from "../../components/cart/CartItem.tsx";
 import EmptyCart from "../../components/cart/EmptyCart.tsx";
 import { useCart } from "../../hooks/useCart.ts";
-import { paymentApi } from "../../api/paymentApi.ts";   
-import { Modal } from "antd";   // 👉 dùng popup
+import { paymentApi } from "../../api/paymentApi.ts";
+import { voucherApi } from "../../api/voucherApi.ts";
+import { Modal, Select, Tag, InputNumber } from "antd";
 import "./CartPage.css";
 
 const CartPage = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const { cart, loading, error, updateQuantity, removeItem, clearCart, refetch } = useCart();
-    const [modal, setModal] = useState<{visible: boolean; message: string}>({
-        visible: false,
-        message: "",
-    });
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { cart, loading, error, updateQuantity, removeItem, clearCart, refetch } = useCart();
 
-    // ✅ Khi load CartPage, kiểm tra status từ query string
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const status = params.get("status");
+  const [modal, setModal] = useState<{ visible: boolean; message: string }>({
+    visible: false,
+    message: "",
+  });
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [vouchers, setVouchers] = useState<any[]>([]);
+  const [selectedVoucher, setSelectedVoucher] = useState<any | null>(null);
 
-        if (status) {
-            let message = "";
-            switch (status) {
-                case "paid":
-                    message = "🎉 Thanh toán thành công!";
-                    break;
-                case "failed":
-                    message = "❌ Thanh toán thất bại!";
-                    break;
-                case "invalid":
-                    message = "⚠️ Giao dịch không hợp lệ!";
-                    break;
-                case "notfound":
-                    message = "🔎 Không tìm thấy đơn hàng!";
-                    break;
-                default:
-                    message = "Có lỗi xảy ra trong quá trình thanh toán.";
-            }
-            setModal({ visible: true, message });
+  const [userXu, setUserXu] = useState<number>(0);
+  const [usedXu, setUsedXu] = useState<number>(0);
 
-            // Xóa query param để tránh popup lặp lại khi F5
-            navigate("/cart", { replace: true });
-        }
-    }, [location, navigate]);
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const status = params.get("status");
 
-    const handleCheckout = async () => {
-        try {
-            const res = await paymentApi.createQr();
-            console.log("Thanh toán response:", res);
-
-            if (res.success && res.url) {
-                window.location.href = res.url; // redirect sang VNPay
-            } else {
-                Modal.error({ title: "Lỗi", content: "Không tạo được link thanh toán" });
-            }
-        } catch (err) {
-            console.error("Error creating QR payment:", err);
-            Modal.error({ title: "Lỗi", content: "Có lỗi xảy ra khi tạo thanh toán" });
-        }
-    };
-
-    const handleContinueShopping = () => {
-        navigate("/products");
-    };
-
-    const handleClearCart = async () => {
-        if (window.confirm("Bạn có chắc muốn xóa tất cả sản phẩm trong giỏ hàng?")) {
-            try {
-                await clearCart();
-            } catch (err) {
-                console.error("Error clearing cart:", err);
-            }
-        }
-    };
-
-    if (loading) {
-        return (
-            <div className="cart-page">
-                <div className="cart-container">
-                    <div className="loading-spinner">
-                        <i className="bi bi-arrow-clockwise"></i>
-                        <span>Đang tải giỏ hàng...</span>
-                    </div>
-                </div>
-            </div>
-        );
+    if (status) {
+      let message = "";
+      switch (status) {
+        case "paid":
+          message = "🎉 Thanh toán thành công!";
+          break;
+        case "failed":
+          message = "❌ Thanh toán thất bại!";
+          break;
+        case "invalid":
+          message = "⚠️ Giao dịch không hợp lệ!";
+          break;
+        case "notfound":
+          message = "🔎 Không tìm thấy đơn hàng!";
+          break;
+        default:
+          message = "Có lỗi xảy ra trong quá trình thanh toán.";
+      }
+      setModal({ visible: true, message });
+      navigate("/cart", { replace: true });
     }
+  }, [location, navigate]);
 
-    if (error) {
-        return (
-            <div className="cart-page">
-                <div className="cart-container">
-                    <div className="error-message">
-                        <i className="bi bi-exclamation-triangle"></i>
-                        <p>{error}</p>
-                        <button onClick={refetch} className="retry-btn">
-                            Thử lại
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+  useEffect(() => {
+    const fetchVouchers = async () => {
+      try {
+        const res = await voucherApi.getMyVouchers();
+        if (res.success) {
+          setVouchers(res.vouchers || []);
+          setUserXu(res.xu || 0); // bỏ +1
+        }
+      } catch (err) {
+        console.error("Error fetching vouchers:", err);
+      }
+    };
+    fetchVouchers();
+  }, []);
 
-    const { data } = cart || { data: { items: [], totalItems: 0, totalPrice: 0 } };
-    const { items, totalItems, totalPrice } = data;
-
-    return (
-        <div className="cart-page">
-            <div className="cart-container">
-                <div className="cart-header">
-                    <h1 className="cart-title">
-                        <i className="bi bi-cart3"></i>
-                        Giỏ hàng của bạn
-                    </h1>
-                    <p className="cart-subtitle">
-                        {totalItems > 0
-                            ? `Bạn có ${totalItems} sản phẩm trong giỏ hàng`
-                            : "Giỏ hàng của bạn đang trống"}
-                    </p>
-                </div>
-
-                {totalItems === 0 ? (
-                    <EmptyCart />
-                ) : (
-                    <div className="cart-content">
-                        <div className="cart-items-section">
-                            <div className="cart-items-header">
-                                <h2>Sản phẩm trong giỏ</h2>
-                                <button
-                                    className="clear-cart-btn"
-                                    onClick={handleClearCart}
-                                >
-                                    <i className="bi bi-trash"></i>
-                                    Xóa tất cả
-                                </button>
-                            </div>
-
-                            <div className="cart-items-list">
-                                {items.map((item: CartItemType) => (
-                                    <CartItem
-                                        key={item.product._id}
-                                        item={item}
-                                        onUpdateQuantity={updateQuantity}
-                                        onRemoveItem={removeItem}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="cart-summary-section">
-                            <CartSummary
-                                totalItems={totalItems}
-                                totalPrice={totalPrice}
-                                onCheckout={handleCheckout}
-                                onContinueShopping={handleContinueShopping}
-                            />
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            <Modal
-                open={modal.visible}
-                onCancel={() => setModal({ ...modal, visible: false })}
-                footer={null}
-                centered
-            >
-                <p style={{ fontSize: "16px" }}>{modal.message}</p>
-            </Modal>
-        </div>
+  const handleToggleItem = (productId: string) => {
+    setSelectedItems((prev) =>
+      prev.includes(productId)
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId]
     );
+  };
+
+  const handleToggleAll = (items: CartItemType[]) => {
+    if (selectedItems.length === items.length) {
+      setSelectedItems([]);
+    } else {
+      setSelectedItems(items.map((item) => item.product._id));
+    }
+  };
+
+  const handleCheckout = async () => {
+    try {
+      const res = await paymentApi.createQr({
+        items: selectedItems,
+        voucherCode: selectedVoucher?.code || null,
+        usedXu: Number(usedXu) || 0 // ép kiểu number
+      });
+
+      if (res.success && res.url) {
+        window.location.href = res.url;
+      } else {
+        Modal.error({ title: "Lỗi", content: "Không tạo được link thanh toán" });
+      }
+    } catch (err) {
+      console.error("Error creating QR payment:", err);
+      Modal.error({ title: "Lỗi", content: "Có lỗi xảy ra khi tạo thanh toán" });
+    }
+  };
+
+  const handleContinueShopping = () => {
+    navigate("/products");
+  };
+
+  const handleClearCart = async () => {
+    if (window.confirm("Bạn có chắc muốn xóa tất cả sản phẩm trong giỏ hàng?")) {
+      try {
+        await clearCart();
+      } catch (err) {
+        console.error("Error clearing cart:", err);
+      }
+    }
+  };
+
+  if (loading) return <div>Đang tải giỏ hàng...</div>;
+  if (error)
+    return (
+      <div className="cart-page">
+        <p>{error}</p>
+        <button onClick={refetch}>Thử lại</button>
+      </div>
+    );
+
+  const { data } = cart || { data: { items: [], totalItems: 0, totalPrice: 0 } };
+  const { items, totalItems } = data;
+  const isAllSelected = items.length > 0 && selectedItems.length === items.length;
+
+  const selectedTotal = items
+    .filter((i: CartItemType) => selectedItems.includes(i.product._id))
+    .reduce((sum, i) => sum + (i.product.price * (1 - (i.product.discount || 0) / 100)) * i.quantity, 0);
+
+  let discount = 0;
+  if (selectedVoucher) {
+    if (selectedVoucher.type === "percentage") {
+      discount = (selectedTotal * selectedVoucher.discountValue) / 100;
+    } else if (selectedVoucher.type === "fixed") {
+      discount = selectedVoucher.discountValue;
+    }
+  }
+
+  const finalPrice = Math.max(0, selectedTotal - discount - usedXu);
+
+  return (
+    <div className="cart-page">
+      <div className="cart-container">
+        <div className="cart-header">
+          <h1>Giỏ hàng của bạn</h1>
+          <p>{totalItems > 0 ? `Bạn có ${totalItems} sản phẩm` : "Giỏ hàng trống"}</p>
+        </div>
+
+        {totalItems === 0 ? (
+          <EmptyCart />
+        ) : (
+          <div className="cart-content">
+            <div className="cart-items-section">
+              <div className="cart-items-header">
+                <input
+                  type="checkbox" className="custom-checkbox"
+                  checked={isAllSelected}
+                  onChange={() => handleToggleAll(items)}
+                />
+                <h2>Sản phẩm</h2>
+                <button className="clear-cart-btn" onClick={handleClearCart}>Xóa tất cả</button>
+              </div>
+
+              <div className="cart-items-list">
+                {items.map((item: CartItemType) => (
+                  <CartItem
+                    key={item.product._id}
+                    item={item}
+                    onUpdateQuantity={updateQuantity}
+                    onRemoveItem={removeItem}
+                    checked={selectedItems.includes(item.product._id)}
+                    onToggle={() => handleToggleItem(item.product._id)}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="cart-summary-section">
+              {/* 📌 Hiển thị số xu */}
+              <div style={{ marginBottom: "16px" }}>
+                <h3>Số xu của bạn: <b>{userXu.toLocaleString()} xu</b></h3>
+                <label>Sử dụng xu: </label>
+                <InputNumber
+                  min={0}
+                  max={userXu}
+                  value={usedXu}
+                  onChange={(value) => setUsedXu(Number(value) || 0)} // Ép kiểu number
+                />
+              </div>
+
+              {/* 📌 Chọn voucher */}
+              <div style={{ marginBottom: "16px" }}>
+                <h3>Chọn Voucher</h3>
+                <Select
+                  style={{ width: "100%" }}
+                  placeholder="Chọn voucher"
+                  value={selectedVoucher?.code}
+                  onChange={(value) => {
+                    const voucher = vouchers.find((v) => v.code === value);
+                    setSelectedVoucher(voucher);
+                  }}
+                >
+                  {vouchers.map((v) => (
+                    <Select.Option key={v.code} value={v.code}>
+                      <Tag color="blue">{v.code}</Tag> -{" "}
+                      {v.type === "percentage"
+                        ? `${v.discountValue}%`
+                        : `${v.discountValue.toLocaleString()}đ`}{" "}
+                      (HSD: {new Date(v.expiryDate).toLocaleDateString("vi-VN")})
+                    </Select.Option>
+                  ))}
+                </Select>
+              </div>
+
+              {/* 📌 Hiển thị CartSummary */}
+              <CartSummary
+                totalItems={selectedItems.length}
+                totalPrice={finalPrice}
+                discount={discount + usedXu} // tổng giảm = voucher + xu
+                onCheckout={handleCheckout}
+                onContinueShopping={handleContinueShopping}
+              />
+
+              {selectedVoucher && (
+                <p style={{ marginTop: "8px", fontSize: "14px" }}>
+                  Giảm giá voucher: <b>{discount.toLocaleString()}đ ({selectedVoucher.code})</b>
+                </p>
+              )}
+              {usedXu > 0 && (
+                <p style={{ marginTop: "4px", fontSize: "14px" }}>
+                  Giảm giá xu: <b>{usedXu.toLocaleString()} xu</b>
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <Modal
+        open={modal.visible}
+        onCancel={() => setModal({ ...modal, visible: false })}
+        footer={null}
+        centered
+      >
+        <p>{modal.message}</p>
+      </Modal>
+    </div>
+  );
 };
 
 export default CartPage;

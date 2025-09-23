@@ -19,4 +19,11 @@ export const profileApi = {
             },
         });
     },
+
+    addToViewedProducts: async (productId: string) : Promise<{success: boolean, message: string}> => {
+        return await axiosClient.post('/user/viewed-products', { productId });
+    },
+   toggleFavoriteProduct: (productId: string) : Promise<{success: boolean, message: string}> => {
+        return axiosClient.post('/user/favorite-products', { productId });
+    },
 };

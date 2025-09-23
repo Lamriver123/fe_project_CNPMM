@@ -7,7 +7,7 @@ const Header: React.FC = () => {
       <div className="header-content">
         <h1>Chào mừng đến với UTEShop</h1>
         <p>Nơi mua bán an toàn, nhanh chóng và tiện lợi.</p>
-        <button className="btn-header">Khám phá ngay</button>
+        <button className="btn-header" onClick={() => window.location.href = "/products"}>Khám phá ngay</button>
       </div>
     </header>
   );
