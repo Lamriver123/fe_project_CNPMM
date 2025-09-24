@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
   const { user, token } = useSelector((state: RootState) => state.auth);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { cart, cartCount } = useCart();
+  const { cartCount } = useCart();
 
   // Đóng khi người dùng click ra ngoài Dropdown
   useEffect(() => {
@@ -45,7 +45,20 @@ const Navbar: React.FC = () => {
     setIsDropdownOpen(false);
   };
 
+  const handleFavoriteClick = () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    navigate("/profile?tab=favorites");
+    setIsDropdownOpen(false);
+  }
+
   const handleCartClick = () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
     navigate("/cart");
     setIsDropdownOpen(false);
   };
@@ -53,9 +66,6 @@ const Navbar: React.FC = () => {
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
-
-  const { data } = cart || { data: { items: [], totalItems: 0, totalPrice: 0 } };
-  const { totalItems } = data;
 
   return (
     <nav className="uts-navbar">
@@ -101,8 +111,9 @@ const Navbar: React.FC = () => {
         {/* Actions */}
         <div className="uts-actions">
           {/* Wishlist */}
-          <button className="uts-icon-btn" aria-label="Wishlist">
+          <button className="uts-icon-btn" aria-label="Wishlist" onClick={handleFavoriteClick}>
             <i className="bi bi-heart"></i>
+            {user?.favProducts.length ? <span className="uts-badge">{user?.favProducts.length}</span> : null}
           </button>
 
           {/* Cart */}

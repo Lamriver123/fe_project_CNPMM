@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FavoritesCard from "../../components/profile/FavoritesCard.tsx";
 import OrdersCard from "../../components/profile/OrdersCard.tsx";
 import PersonalInfoCard from "../../components/profile/PersonalInfoCard.tsx";
@@ -10,15 +10,24 @@ import { useProfile } from "../../hooks/useProfile.ts";
 import type { User } from "../../types/User";
 import "./ProfilePage.css";
 import ViewedProductsCard from "../../components/profile/ViewedProductsCard.tsx";
+import { useSearchParams } from "react-router-dom";
 
 export default function ProfilePage() {
     const { user, loading, error, updateProfile } = useProfile();
-    const [activeTab, setActiveTab] = useState('personal');
-    const [stats, setStats] = useState({
-        orders: 12,
-        reviews: 5,
-        favorites: 2
-    });
+    const [activeTab, setActiveTab] = useState('personal')
+    const [searchParams] = useSearchParams();;
+    // const [stats, setStats] = useState({
+    //     orders: 12,
+    //     reviews: 5,
+    //     favorites: 2
+    // });
+
+    useEffect(() => {
+        const tab = searchParams.get("tab");
+        if (tab) {
+            setActiveTab(tab);
+        }
+    }, [searchParams]);
 
     const handleUpdateProfile = async (data: Partial<User>) => {
         try {
@@ -100,7 +109,7 @@ export default function ProfilePage() {
                 )}
 
                 {/* Header */}
-                <ProfileHeader user={user} stats={stats} />
+                <ProfileHeader user={user} />
 
                 {/* Content */}
                 <div className="profile-content">

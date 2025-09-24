@@ -1,18 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import type { User } from "../../types/User";
+import { useNavigate } from "react-router-dom";
 
 interface ProfileHeaderProps {
     user: User;
-    stats: {
-        orders: number;
-        reviews: number;
-        favorites: number;
-    };
 }
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, stats }) => {
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [previewAvatar, setPreviewAvatar] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     const handleAvatarClick = () => {
         fileInputRef.current?.click();
@@ -35,6 +32,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, stats }) => {
         }
         e.target.value = '';    // cho phép chọn lại ảnh vừa chọn trước đó
     };
+
+    const handleTabClick = (tab: string) => {
+        navigate(`/profile?tab=${tab}`);
+    }
 
     return (
         <div className="profile-header">
@@ -64,16 +65,16 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, stats }) => {
                 </h1>
                 <p className="profile-email">{user.email}</p>
                 <div className="profile-stats">
-                    <div className="stat-item">
-                        <span className="profile-stat-number">{stats.orders}</span>
+                    <div className="stat-item" onClick={() => handleTabClick('orders')}>
+                        <span className="profile-stat-number">1</span>
                         <span className="profile-stat-label">Đơn hàng</span>
                     </div>
-                    <div className="stat-item">
-                        <span className="profile-stat-number">{stats.reviews}</span>
+                    <div className="stat-item" onClick={() => handleTabClick('viewed')}>
+                        <span className="profile-stat-number">4</span>
                         <span className="profile-stat-label">Đánh giá</span>
                     </div>
-                    <div className="stat-item">
-                        <span className="profile-stat-number">{stats.favorites}</span>
+                    <div className="stat-item" onClick={() => handleTabClick('favorites')}>
+                        <span className="profile-stat-number">{user.favProducts.length}</span>
                         <span className="profile-stat-label">Yêu thích</span>
                     </div>
                 </div>
