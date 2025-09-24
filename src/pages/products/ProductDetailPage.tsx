@@ -11,9 +11,10 @@ import ProductsSection from "../../components/products/ProductsSection.tsx";
 import { Product } from "../../types/Product";
 import { formatPrice } from "../../utils/format.ts";
 import "./ProductDetailPage.css";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/store.ts";
 import { profileApi } from "../../api/profileApi.ts";
+import { toggleFavoriteProduct } from "../../redux/authSlice.ts";
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -21,13 +22,16 @@ export default function ProductDetailPage() {
   const [relatedProduct, setRelatedProduct] = useState<Product[] | null>(null);
   const [quantity, setQuantity] = useState(1);
   const { user } = useSelector((state: RootState) => state.auth);
-  const [isFavorite, setIsFavorite] = useState(false);
+  const dispatch = useDispatch();
+
+  // Tính toán isFavorite trực tiếp từ Redux state
+  const isFavorite = product && user ? user.favProducts.includes(product._id) : false;
 
   //const product = mockProducts.find((p) => p.id === Number(id));
   const navigate = useNavigate();
-     // Check if product is in favorites when component mounts or product/user changes
+  // Check if product is in favorites when component mounts or product/user changes
 
-   const handleAddToCart = async () => {
+  const handleAddToCart = async () => {
     if (!product) return;
 
     try {
@@ -38,7 +42,7 @@ export default function ProductDetailPage() {
       alert("Thêm vào giỏ hàng thất bại");
     }
   };
-    useEffect(() => {
+  useEffect(() => {
     if (!slug) return;
 
     const fetchProduct = async () => {
@@ -54,27 +58,23 @@ export default function ProductDetailPage() {
 
     fetchProduct();
   }, [slug]);
-    useEffect(() => {
-    if (product && user) {
-      setIsFavorite(user.favProducts.includes(product._id));
-    }
-  }, [product, user]);
-  
+  // Không cần useEffect để set isFavorite nữa vì đã tính toán trực tiếp
+
   useEffect(() => {
-  if (!product) return; // tránh gọi khi product chưa có
+    if (!product) return; // tránh gọi khi product chưa có
 
-  const fetchRelatedProduct = async () => {
-    try {
-      const slug = `${product.category.name}-${product.category._id}`;
-      const res = await CategoryApi.getProductsByCategoryPagination(slug);
-      setRelatedProduct(res.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    const fetchRelatedProduct = async () => {
+      try {
+        const slug = `${product.category.name}-${product.category._id}`;
+        const res = await CategoryApi.getProductsByCategoryPagination(slug);
+        setRelatedProduct(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-  fetchRelatedProduct();
-}, [product?.category?._id]); 
+    fetchRelatedProduct();
+  }, [product?.category?._id]);
 
 
   useEffect(() => {
@@ -102,13 +102,14 @@ export default function ProductDetailPage() {
 
     try {
       await profileApi.toggleFavoriteProduct(product._id);
-      setIsFavorite(!isFavorite);
+      // Cập nhật Redux state ngay lập tức
+      dispatch(toggleFavoriteProduct(product._id));
     } catch (error) {
       console.error("Error toggling favorite:", error);
       alert("Không thể thêm/xóa khỏi danh sách yêu thích");
     }
   };
-  
+
   return (
     <div>
       <div className="product-detail-container">
@@ -118,7 +119,7 @@ export default function ProductDetailPage() {
             spaceBetween={10}
             slidesPerView={1}
             autoplay={{ delay: 3000, disableOnInteraction: false }}
-            modules={[Autoplay]} 
+            modules={[Autoplay]}
           >
             {product.images?.map((img, index) => (
               <SwiperSlide key={index}>
@@ -160,14 +161,14 @@ export default function ProductDetailPage() {
             🛒 Thêm {quantity} vào giỏ
           </button>
         </div>
-          <div className="action-buttons">
-            <button 
-              className={`btn-favorite ${isFavorite ? 'active' : ''}`}
-              onClick={handleToggleFavorite}
-            >
-              {isFavorite ? '❤️' : '🤍'} 
-            </button>
-          </div>
+        <div className="action-buttons">
+          <button
+            className={`btn-favorite ${isFavorite ? 'active' : ''}`}
+            onClick={handleToggleFavorite}
+          >
+            {isFavorite ? '❤️' : '🤍'}
+          </button>
+        </div>
       </div>
 
       <CommentsSection productId={product._id} />

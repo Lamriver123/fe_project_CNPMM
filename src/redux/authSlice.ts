@@ -86,6 +86,20 @@ const authSlice = createSlice({
       state.user = action.payload;
       //    localStorage.setItem("user", JSON.stringify(action.payload));
     },
+    toggleFavoriteProduct(state, action: PayloadAction<string>) {
+      if (state.user) {
+        const productId = action.payload;
+        const index = state.user.favProducts.indexOf(productId);
+
+        if (index > -1) {
+          // Remove from favorites
+          state.user.favProducts.splice(index, 1);
+        } else {
+          // Add to favorites
+          state.user.favProducts.push(productId);
+        }
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -118,5 +132,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, setToken, updateUser } = authSlice.actions;
+export const { logout, setToken, updateUser, toggleFavoriteProduct } = authSlice.actions;
 export default authSlice.reducer;
