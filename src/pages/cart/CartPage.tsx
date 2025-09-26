@@ -9,6 +9,8 @@ import { paymentApi } from "../../api/paymentApi.ts";
 import { voucherApi } from "../../api/voucherApi.ts";
 import { Modal, Select, Tag, InputNumber } from "antd";
 import "./CartPage.css";
+import { toast } from "react-toastify";
+
 
 const CartPage = () => {
   const navigate = useNavigate();
@@ -89,11 +91,36 @@ const CartPage = () => {
       const res = await paymentApi.createQr({
         items: selectedItems,
         voucherCode: selectedVoucher?.code || null,
-        usedXu: Number(usedXu) || 0 // ép kiểu number
+        usedXu: Number(usedXu) || 0,
       });
 
       if (res.success && res.url) {
-        window.location.href = res.url;
+        const paymentWindow = window.open(res.url, "_blank");
+
+        if (!paymentWindow) {
+          Modal.error({ title: "Lỗi", content: "Không thể mở tab thanh toán. Vui lòng kiểm tra trình duyệt." });
+          return;
+        }
+
+        // Lắng nghe kết quả từ tab thanh toán
+        const handleMessage = (event: MessageEvent) => {
+          if (event.origin !== window.location.origin) return; // bảo mật
+
+          const { status, orderId } = event.data;
+          if (status === "paid") {
+            toast.success("Thanh toán thành công!");
+            // TODO: cập nhật giỏ hàng, danh sách đơn hàng...
+          } else if (status === "failed") {
+            toast.error("Thanh toán thất bại!");
+          } else if (status === "invalid") {
+            toast.error("Thông tin thanh toán không hợp lệ!");
+          }
+
+          // Sau khi nhận thông báo xong, bỏ listener
+          window.removeEventListener("message", handleMessage);
+        };
+
+        window.addEventListener("message", handleMessage);
       } else {
         Modal.error({ title: "Lỗi", content: "Không tạo được link thanh toán" });
       }
@@ -102,6 +129,7 @@ const CartPage = () => {
       Modal.error({ title: "Lỗi", content: "Có lỗi xảy ra khi tạo thanh toán" });
     }
   };
+
 
   const handleContinueShopping = () => {
     navigate("/products");

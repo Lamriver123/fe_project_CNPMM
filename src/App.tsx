@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { profileApi } from "./api/profileApi.ts";
 
@@ -32,9 +31,12 @@ import ProductDetailPage from "./pages/products/ProductDetailPage.tsx";
 import ProductsPage from "./pages/products/ProductsPage.tsx";
 import ProfilePage from "./pages/profile/ProfilePage.tsx";
 import { setToken, updateUser } from "./redux/authSlice.ts";
+import { useDispatch, useSelector } from "react-redux";
+import { getSocket } from "./utils/socket.ts";
+
 export default function App() {
   const dispatch = useDispatch();
-
+  const user = useSelector((state: any) => state.auth.user);
 
 
   useEffect(() => {
@@ -59,6 +61,14 @@ export default function App() {
 
     fetchProfile();
   }, [dispatch]);
+
+  useEffect(() => {
+    if (user?._id) {
+      const socket = getSocket();
+      socket.emit("register", user._id);
+      console.log("Socket connected for user:", user._id);
+    }
+  }, [user]);
 
 
   return (

@@ -228,3 +228,107 @@
   background: #c82333;
   border-color: #c82333;
 }
+
+.uts-notification {
+  position: relative;
+}
+
+.uts-notification-dropdown {
+  display: none;
+  position: absolute;
+  top: 35px;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 260px;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  z-index: 1000;
+}
+
+.uts-notification:hover .uts-notification-dropdown {
+  display: block;
+}
+
+.uts-noti-item {
+  padding: 10px;
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.uts-noti-item:hover {
+  background: #f8f8f8;
+}
+
+.uts-noti-empty {
+  padding: 15px;
+  text-align: center;
+  color: #666;
+  font-size: 13px;
+}
+
+/* Notification dropdown */
+.uts-notification-dropdown {
+  position: absolute;
+  right: 0;
+  top: 40px;
+  width: 300px;
+  max-height: 400px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.uts-noti-header {
+  padding: 10px 15px;
+  font-weight: 600;
+  border-bottom: 1px solid #eee;
+  background-color: #f8f8f8;
+}
+
+.uts-noti-list {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.uts-noti-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #f1f1f1;
+  transition: background 0.2s;
+}
+
+.uts-noti-item:hover {
+  background: #f0f0f0;
+}
+
+.uts-noti-item.unread {
+  font-weight: 500;
+  background: #eaf5ff;
+}
+
+.uts-noti-message {
+  flex: 1;
+}
+
+.uts-noti-time {
+  font-size: 12px;
+  color: #888;
+  margin-left: 10px;
+  white-space: nowrap;
+}
+
+.uts-noti-empty {
+  padding: 15px;
+  text-align: center;
+  color: #888;
+}
+

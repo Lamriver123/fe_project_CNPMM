@@ -30,16 +30,15 @@ export const loginThunk = createAsyncThunk(
         body: JSON.stringify(payload),
       });
       const data: LoginResponse = await res.json();
-      // console.log("Backend response:", data); // Debug log
 
       if (!res.ok || !data.success) {
         return rejectWithValue(data.message || "Login failed");
       }
 
-      // Extract token and user from data object
       const { accessToken, refreshToken, user } = data.data || {};
 
       console.log("Extracted data:", { accessToken, refreshToken, user }); // Debug log
+      localStorage.setItem("userId", user?._id || "");
 
       return {
         success: true,
