@@ -21,7 +21,7 @@ export default function EditProductDialog({ isOpen, onClose, onSave, product }: 
 
   return (
     <div className="modal-overlay">
-      <div className="modal">
+      <div className="addModal">
         <h3>✏️ Sửa sản phẩm</h3>
 
         <div className="form-group">

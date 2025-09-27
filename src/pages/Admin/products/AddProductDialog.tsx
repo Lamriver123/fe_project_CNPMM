@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import { Product } from "../../../types/Product";
+import { useState } from "react";
 import { Category } from "../../../types/Category";
+import { Product } from "../../../types/Product";
 import "./ProductDialog.css";
-import ReactDOM from "react-dom";
 
 type Props = {
   isOpen: boolean;
@@ -38,7 +37,7 @@ export default function AddProductDialog({ isOpen, onClose, onSave }: Props) {
 
   return (
     <div className="modal-overlay">
-      <div className="modal">
+      <div className="addModal" id="addModal">
         <h3>➕ Thêm sản phẩm</h3>
 
         <div className="form-group">

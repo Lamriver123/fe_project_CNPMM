@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import { FiBox } from "react-icons/fi";
-import { Product } from "../../../types/Product";
-import { Category } from "../../../types/Category";
-import AddProductDialog from "./AddProductDialog.tsx";
-import EditProductDialog from "./EditProductDialog.tsx";
-import "./AdminProductsPage.css";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { useState } from "react";
 import "react-circular-progressbar/dist/styles.css";
+import { FiBox } from "react-icons/fi";
+import { Category } from "../../../types/Category";
+import { Product } from "../../../types/Product";
+import AddProductDialog from "./AddProductDialog.tsx";
+import "./AdminProductsPage.css";
+import EditProductDialog from "./EditProductDialog.tsx";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([

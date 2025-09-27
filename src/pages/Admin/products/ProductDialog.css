@@ -8,13 +8,18 @@
   z-index: 99999; /* cao hơn mọi thành phần khác */
 }
 
-.modal {
+.addModal {
   background: #fff;
   padding: 24px;
   width: 420px;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.3);
   animation: fadeIn 0.25s ease;
+  display: block !important;
+}
+
+.modal.open {
+  display: block !important;
 }
 
 @keyframes fadeIn {
