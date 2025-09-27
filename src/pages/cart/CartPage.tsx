@@ -9,7 +9,6 @@ import { paymentApi } from "../../api/paymentApi.ts";
 import { voucherApi } from "../../api/voucherApi.ts";
 import { Modal, Select, Tag, InputNumber } from "antd";
 import "./CartPage.css";
-import { toast } from "react-toastify";
 
 
 const CartPage = () => {
@@ -37,6 +36,8 @@ const CartPage = () => {
       switch (status) {
         case "paid":
           message = "🎉 Thanh toán thành công!";
+          // Clear selected items after successful payment
+          setSelectedItems([]);
           break;
         case "failed":
           message = "❌ Thanh toán thất bại!";
@@ -51,9 +52,12 @@ const CartPage = () => {
           message = "Có lỗi xảy ra trong quá trình thanh toán.";
       }
       setModal({ visible: true, message });
+      refetch();
+
+      // Clear URL parameters after showing modal
       navigate("/cart", { replace: true });
     }
-  }, [location, navigate]);
+  }, [location, navigate, refetch]);
 
   useEffect(() => {
     const fetchVouchers = async () => {
@@ -107,14 +111,28 @@ const CartPage = () => {
           if (event.origin !== window.location.origin) return; // bảo mật
 
           const { status, orderId } = event.data;
-          if (status === "paid") {
-            toast.success("Thanh toán thành công!");
-            // TODO: cập nhật giỏ hàng, danh sách đơn hàng...
-          } else if (status === "failed") {
-            toast.error("Thanh toán thất bại!");
-          } else if (status === "invalid") {
-            toast.error("Thông tin thanh toán không hợp lệ!");
+          let message = "";
+          switch (status) {
+            case "paid":
+              message = "🎉 Thanh toán thành công!";
+              // Clear selected items after successful payment
+              setSelectedItems([]);
+              break;
+            case "failed":
+              message = "❌ Thanh toán thất bại!";
+              break;
+            case "invalid":
+              message = "⚠️ Giao dịch không hợp lệ!";
+              break;
+            case "notfound":
+              message = "🔎 Không tìm thấy đơn hàng!";
+              break;
+            default:
+              message = "Có lỗi xảy ra trong quá trình thanh toán.";
           }
+          console.log(">> chceckout message:", message);
+          setModal({ visible: true, message });
+          refetch();
 
           // Sau khi nhận thông báo xong, bỏ listener
           window.removeEventListener("message", handleMessage);
@@ -274,10 +292,37 @@ const CartPage = () => {
       <Modal
         open={modal.visible}
         onCancel={() => setModal({ ...modal, visible: false })}
-        footer={null}
+        footer={[
+          <button
+            key="close"
+            onClick={() => setModal({ ...modal, visible: false })}
+            className="btn btn-secondary"
+            style={{ marginRight: "8px" }}
+          >
+            Đóng
+          </button>,
+          modal.message.includes("🎉") && (
+            <button
+              key="orders"
+              onClick={() => {
+                setModal({ ...modal, visible: false });
+                navigate("/orders");
+              }}
+              className="btn btn-primary"
+            >
+              Xem đơn hàng
+            </button>
+          ),
+        ]}
         centered
+        closable={false}
       >
-        <p>{modal.message}</p>
+        <div style={{ textAlign: "center", padding: "20px 0" }}>
+          <div style={{ fontSize: "48px", marginBottom: "16px" }}>
+            {modal.message.includes("🎉") ? "🎉" : modal.message.includes("❌") ? "❌" : modal.message.includes("⚠️") ? "⚠️" : "🔎"}
+          </div>
+          <p style={{ fontSize: "18px", margin: 0 }}>{modal.message}</p>
+        </div>
       </Modal>
     </div>
   );

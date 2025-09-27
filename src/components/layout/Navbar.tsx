@@ -143,7 +143,12 @@ const Navbar: React.FC = () => {
           </button>
 
           {/* Notifications */}
-          <div className="uts-notification" ref={notificationRef}>
+          <div
+            className="uts-notification"
+            ref={notificationRef}
+            onMouseEnter={() => setIsNotificationOpen(true)}
+            onMouseLeave={() => setIsNotificationOpen(false)}
+          >
             <button
               className="uts-icon-btn"
               onClick={() => setIsNotificationOpen(!isNotificationOpen)}
@@ -157,7 +162,7 @@ const Navbar: React.FC = () => {
             {isNotificationOpen && (
               <div className="uts-notification-dropdown">
                 <div className="uts-noti-header">
-                  <span>Thông báo</span>
+                  <span>🔔 Thông báo</span>
                 </div>
                 <div className="uts-noti-list">
                   {notifications.length > 0 ? (
