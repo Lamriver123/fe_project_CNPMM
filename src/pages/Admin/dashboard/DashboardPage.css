@@ -106,10 +106,12 @@
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  margin-top: 16px;
 }
 
 .chart-title {
   font-weight: 600;
   margin-bottom: 16px;
   color: #111827;
+
 }
