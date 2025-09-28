@@ -1,38 +1,44 @@
-import React, { useState } from "react";
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import { useEffect, useState } from "react";
 import {
   FiDollarSign,
   FiShoppingCart,
-  FiUsers,
   FiTrendingUp,
+  FiUsers,
 } from "react-icons/fi";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { getRevenueStats } from "../../../api/adminApis.ts";
 import "./DashboardPage.css";
 
-const data = [
-  { month: "Jan", revenue: 4000, orders: 240, users: 80 },
-  { month: "Feb", revenue: 3000, orders: 221, users: 75 },
-  { month: "Mar", revenue: 5000, orders: 229, users: 90 },
-  { month: "Apr", revenue: 4780, orders: 200, users: 88 },
-  { month: "May", revenue: 5890, orders: 218, users: 110 },
-  { month: "Jun", revenue: 6390, orders: 250, users: 130 },
-  { month: "Jul", revenue: 7490, orders: 300, users: 150 },
-  { month: "Aug", revenue: 4000, orders: 240, users: 80 },
-  { month: "Sep", revenue: 3000, orders: 221, users: 75 },
-  { month: "Oct", revenue: 5000, orders: 229, users: 90 },
-  { month: "Nov", revenue: 4780, orders: 200, users: 88 },
-  { month: "Dec", revenue: 5890, orders: 218, users: 110 },
-];
+interface RevenueStat {
+  month: string;
+  revenue: number;
+  orders: number;
+}
+
+interface Summary {
+  revenue: string; // đã format sang $xx,xxx
+  orders: number;
+  users: number;
+  growth: string; // ví dụ "+15%"
+}
+
+interface RevenueApiResponse {
+  date: string;   // backend trả "2025-09"
+  revenue: number;
+  orders: number;
+}
+
 
 const StatCard = ({ icon: Icon, title, value, color }: any) => (
   <div className="stat-card">
@@ -47,8 +53,64 @@ const StatCard = ({ icon: Icon, title, value, color }: any) => (
 );
 
 export default function DashboardPage() {
-  const [year, setYear] = useState("2025");
-  const [month, setMonth] = useState("all");
+  const [from, setFrom] = useState("2025-01-01");
+  const [to, setTo] = useState("2025-12-31");
+
+  // const [year, setYear] = useState("2025");
+  // const [month, setMonth] = useState("1");
+  const [chartData, setChartData] = useState<RevenueStat[]>([]);
+  const [summary, setSummary] = useState<Summary>({
+    revenue: "0VND",
+    orders: 0,
+    users: 0,
+    growth: "+0%",
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // // Lấy khoảng thời gian theo year
+        // const from = `${year}-01-01`;
+        // const to = `${year}-12-31`;
+
+        const res = await getRevenueStats(from, to, "month");
+        console.log(res);
+    
+          const apiData: RevenueStat[] = res.map((d: RevenueApiResponse) => {
+            console.log(d);
+            const monthIndex = parseInt(d.date.split("-")[1]) - 1;
+            const monthNames = [
+              "Jan","Feb","Mar","Apr","May","Jun",
+              "Jul","Aug","Sep","Oct","Nov","Dec"
+            ];
+            return {
+              month: monthNames[monthIndex],
+              revenue: d.revenue,
+              orders: d.orders,
+            };
+          });
+
+          setChartData(apiData);
+
+          // Tổng hợp cho stat card
+          const totalRevenue = apiData.reduce((sum, d) => sum + d.revenue, 0);
+          const totalOrders = apiData.reduce((sum, d) => sum + d.orders, 0);
+
+          setSummary({
+            revenue: `$${totalRevenue.toLocaleString()} VND`,
+            orders: totalOrders,
+            users: 560,
+            growth: "+15%",
+          });
+        
+
+      } catch (err) {
+        console.error("Fetch error:", err);
+      }
+    };
+
+    fetchData();
+  }, [from, to]);
 
   return (
     <div className="dashboard">
@@ -56,38 +118,35 @@ export default function DashboardPage() {
       <div className="dashboard-header">
         <h2 className="dashboard-title">📊 Dashboard</h2>
         <div className="dashboard-filters">
-          <select
-            value={year}
-            onChange={(e) => setYear(e.target.value)}
-            className="dashboard-select"
-          >
-            <option value="2025">2025</option>
-            <option value="2024">2024</option>
-            <option value="2023">2023</option>
-          </select>
-          <select
-            value={month}
-            onChange={(e) => setMonth(e.target.value)}
-            className="dashboard-select"
-          >
-            <option value="all">Tất cả</option>
-            <option value="1">Tháng 1</option>
-            <option value="2">Tháng 2</option>
-            <option value="3">Tháng 3</option>
-            <option value="4">Tháng 4</option>
-            <option value="5">Tháng 5</option>
-            <option value="6">Tháng 6</option>
-            <option value="7">Tháng 7</option>
-          </select>
-        </div>
+  <label>
+    📅 Từ ngày:
+    <input
+      type="date"
+      value={from}
+      onChange={(e) => setFrom(e.target.value)}
+      className="dashboard-input"
+    />
+  </label>
+
+  <label>
+    📅 Đến ngày:
+    <input
+      type="date"
+      value={to}
+      onChange={(e) => setTo(e.target.value)}
+      className="dashboard-input"
+    />
+  </label>
+</div>
+
       </div>
 
       {/* Stat Cards */}
       <div className="stats-grid">
-        <StatCard icon={FiDollarSign} title="Doanh thu" value="$58,947" color="green" />
-        <StatCard icon={FiShoppingCart} title="Đơn hàng" value="1,230" color="blue" />
-        <StatCard icon={FiUsers} title="Người dùng" value="560" color="purple" />
-        <StatCard icon={FiTrendingUp} title="Tăng trưởng" value="+15%" color="orange" />
+        <StatCard icon={FiDollarSign} title="Doanh thu" value={summary.revenue} color="green" />
+        <StatCard icon={FiShoppingCart} title="Đơn hàng" value={summary.orders} color="blue" />
+        <StatCard icon={FiUsers} title="Người dùng" value={summary.users} color="purple" />
+        <StatCard icon={FiTrendingUp} title="Tăng trưởng" value={summary.growth} color="orange" />
       </div>
 
       {/* Charts */}
@@ -95,7 +154,7 @@ export default function DashboardPage() {
         <div className="chart-box">
           <h3 className="chart-title">Doanh thu theo tháng</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data}>
+            <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
@@ -107,16 +166,15 @@ export default function DashboardPage() {
         </div>
 
         <div className="chart-box">
-          <h3 className="chart-title">Đơn hàng & Người dùng</h3>
+          <h3 className="chart-title">Đơn hàng</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={data}>
+            <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
               <Legend />
               <Line type="monotone" dataKey="orders" stroke="#3b82f6" name="Đơn hàng" />
-              <Line type="monotone" dataKey="users" stroke="#a855f7" name="Người dùng mới" />
             </LineChart>
           </ResponsiveContainer>
         </div>
