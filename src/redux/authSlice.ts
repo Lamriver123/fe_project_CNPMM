@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { User, LoginResponse } from "../types/User";
-
+import { useSelector } from "react-redux";
+import { RootState } from "./store";
 export type AuthState = {
   user: User | null;
   token: string | null;
@@ -39,7 +40,7 @@ export const loginThunk = createAsyncThunk(
 
       console.log("Extracted data:", { accessToken, refreshToken, user }); // Debug log
       localStorage.setItem("userId", user?._id || "");
-
+      localStorage.setItem("isAdmin", user?.isAdmin ? "1" : "0");
       return {
         success: true,
         token: accessToken,
@@ -73,6 +74,7 @@ const authSlice = createSlice({
       if (typeof localStorage !== "undefined") {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
+        localStorage.removeItem("isAdmin");
         //    localStorage.removeItem("user");
 
       }
@@ -130,6 +132,7 @@ const authSlice = createSlice({
       });
   },
 });
+
 
 export const { logout, setToken, updateUser, toggleFavoriteProduct } = authSlice.actions;
 export default authSlice.reducer;

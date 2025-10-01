@@ -34,6 +34,9 @@ import { setToken, updateUser } from "./redux/authSlice.ts";
 import { useDispatch, useSelector } from "react-redux";
 import { getSocket } from "./utils/socket.ts";
 
+import { PrivateRoute } from "./components/PrivateRoute.tsx";
+import { AdminRoute } from "./components/AdminRoute.tsx";
+
 export default function App() {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.auth.user);
@@ -75,23 +78,32 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* Client */}
-        <Route element={<ClientLayout />}>
-          <Route path="/" element={<Navigate to="/home" />} />
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/verify-otp" element={<VerifyOtpPage />} />
-          <Route path="/products" element={<ProductsPage />} />
-          <Route path="/products/:slug" element={<ProductDetailPage />} />
-          <Route path="/category/:slug" element={<CategoryPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/cart" element={<CartPage />} />
+        
+        <Route element={
+          <PrivateRoute>
+            <ClientLayout />
+          </PrivateRoute>
+          
+          }>
+            <Route path="/" element={<Navigate to="/home" />} />
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/verify-otp" element={<VerifyOtpPage />} />
+            <Route path="/products" element={<ProductsPage />} />
+            <Route path="/products/:slug" element={<ProductDetailPage />} />
+            <Route path="/category/:slug" element={<CategoryPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/cart" element={<CartPage />} />
         </Route>
 
         {/* Admin */}
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route path="/admin" element={
+           <AdminRoute>
+              <AdminLayout />
+           </AdminRoute>}>
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="orders" element={<AdminOrdersPage />} />
           <Route path="products" element={<AdminProductsPage />} />

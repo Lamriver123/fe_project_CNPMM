@@ -8,6 +8,7 @@ export interface User {
     email: string;
     username: string;
     isActive: boolean;
+    isAdmin: boolean;
     __v: number;
 
     favProducts: string[],

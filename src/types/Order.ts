@@ -1,5 +1,9 @@
 // src/types/Orders.ts
-
+export interface OrderUser {
+  _id: string;
+  username: string;
+  email: string;
+}
 export interface ProductImage {
   _id: string;
   url: string;
@@ -39,7 +43,7 @@ export interface PaymentInfo {
 
 export interface Order {
   _id: string;
-  user: string;
+  user: OrderUser;
   items: OrderItem[];
   totalPrice: number;
   status: string;        // "paid", "pending", ...
