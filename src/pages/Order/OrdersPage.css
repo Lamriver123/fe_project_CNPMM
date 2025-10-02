@@ -102,10 +102,15 @@
   margin-bottom: 4px;
 }
 
+
 .item-info .price {
-  color: #d32f2f;
-  font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
 }
+
+
 
 .order-footer {
   display: flex;
@@ -183,3 +188,4 @@
   cursor: pointer;
   margin: 6px 0;
 }
+

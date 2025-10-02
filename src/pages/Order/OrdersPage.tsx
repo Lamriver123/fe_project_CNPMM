@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { orderApi } from "../../api/orderApi.ts";
 import { Order } from "../../types/Order";
-import { toast } from "react-toastify";
 import ReviewModal from "../../components/comments/ReviewModal.tsx";
 import "./OrdersPage.css";
 import RewardModal from "../../components/comments/RewardModal.tsx";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { formatPrice } from "../../utils/format.ts";
+
 
 type OrderStatus =
   | "pending"
@@ -77,7 +80,6 @@ const OrdersPage: React.FC = () => {
 
   const handleUpdateStatus = async (orderId: string, currentStatus: string) => {
     try {
-      toast.info(currentStatus);
       await orderApi.updateStatus(orderId, currentStatus);
       toast.success("Cập nhật đơn hàng thành công!");
       const res = await orderApi.getOrder(currentStatus);
@@ -181,9 +183,12 @@ const OrdersPage: React.FC = () => {
                         <div className="item-info">
                           <p className="name">{item.product.name}</p>
                           <p className="qty">Số lượng: {item.quantity}</p>
-                          <p className="price">
-                            {(item.product.price * item.quantity).toLocaleString()} đ
-                          </p>
+                          <div className="price">
+                              <span className="current-price">{formatPrice(item.product.price * item.quantity-item.product.price * item.quantity*item.product.discount*0.01 )}</span>
+                              {item.product.discount > 0 && (
+                                  <span className="original-price">{formatPrice(item.product.price * item.quantity)}</span>
+                              )}
+                          </div>
                           {order.statusOrder === "delivered" && (
                             <div className="item-actions">
                               {!item.isCommented && (
@@ -274,6 +279,18 @@ const OrdersPage: React.FC = () => {
       {reward && (
         <RewardModal reward={reward} onClose={() => setReward(null)} />
       )}
+
+      {/* Toast container phải có */}
+      <ToastContainer 
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
     </div>
   );
 };

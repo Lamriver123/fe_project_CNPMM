@@ -6,6 +6,7 @@ import { formatPrice } from "../../utils/format.ts";
 import { productApi } from "../../api/productApi.ts";
 import { Category } from "../../types/Category.ts";
 import { CategoryApi } from "../../api/categoryApi.ts";
+import { toast, ToastContainer } from "react-toastify";
 const ProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]); // 👈 danh mục fetch từ BE
@@ -113,6 +114,17 @@ const ProductsPage = () => {
         subtitle="4 sản phẩm có ưu đãi lớn nhất"
         products={discountProducts}
         formatPrice={formatPrice}
+      />
+
+      <ToastContainer 
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
       />
     </div>
   );

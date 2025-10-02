@@ -15,7 +15,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/store.ts";
 import { profileApi } from "../../api/profileApi.ts";
 import { toggleFavoriteProduct } from "../../redux/authSlice.ts";
-
+import { toast, ToastContainer } from "react-toastify";
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const [product, setProduct] = useState<Product | null>(null);
@@ -177,6 +177,17 @@ export default function ProductDetailPage() {
         products={relatedProduct ?? []}
         subtitle=""
         formatPrice={formatPrice}
+      />
+
+      <ToastContainer 
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
       />
     </div>
   );

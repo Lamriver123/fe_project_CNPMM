@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
 import "./AdminUsersPage.css";
 
 interface User {
@@ -126,7 +127,19 @@ const AdminUsersPage: React.FC = () => {
           )}
         </tbody>
       </table>
+
+      <ToastContainer 
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
     </div>
+    
   );
 };
 

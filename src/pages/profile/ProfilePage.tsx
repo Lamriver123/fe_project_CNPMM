@@ -11,7 +11,7 @@ import type { User } from "../../types/User";
 import "./ProfilePage.css";
 import ViewedProductsCard from "../../components/profile/ViewedProductsCard.tsx";
 import { useSearchParams } from "react-router-dom";
-
+import { toast, ToastContainer } from "react-toastify";
 export default function ProfilePage() {
     const { user, loading, error, updateProfile } = useProfile();
     const [activeTab, setActiveTab] = useState('personal')
@@ -120,6 +120,16 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
+            <ToastContainer 
+                position="top-right"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                pauseOnHover
+                draggable
+                theme="colored"
+            />
         </div>
     );
 }

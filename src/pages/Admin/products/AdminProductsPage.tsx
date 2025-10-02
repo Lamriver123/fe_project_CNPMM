@@ -6,7 +6,7 @@ import { Product } from "../../../types/Product";
 import AddProductDialog from "./AddProductDialog.tsx";
 import "./AdminProductsPage.css";
 import EditProductDialog from "./EditProductDialog.tsx";
-
+import { toast, ToastContainer } from "react-toastify";
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([
     {
@@ -172,6 +172,7 @@ export default function AdminProductsPage() {
         </tbody>
       </table>
 
+
       {/* Dialogs */}
       <AddProductDialog
         isOpen={isAddOpen}
@@ -186,6 +187,17 @@ export default function AdminProductsPage() {
           product={editingProduct}
         />
       )}
+
+      <ToastContainer 
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
     </div>
   );
 }

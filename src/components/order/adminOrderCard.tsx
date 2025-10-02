@@ -1,6 +1,7 @@
 import React from "react";
 import { Order } from "../../types/Order.ts";
 import "./adminOrderCard.css";
+import { formatPrice } from "../../utils/format.ts";
 
 type Props = {
   order: Order;
@@ -46,9 +47,12 @@ const adminOrderCard: React.FC<Props> = ({ order, onUpdateStatus }) => {
             <div className="item-info">
               <p className="name">{item.product.name}</p>
               <p>Số lượng: {item.quantity}</p>
-              <p className="price">
-                {(item.product.price * item.quantity).toLocaleString()} đ
-              </p>
+              <div className="price">
+                  <span className="current-price">{formatPrice(item.product.price * item.quantity-item.product.price * item.quantity*item.product.discount*0.01 )}</span>
+                  {item.product.discount > 0 && (
+                      <span className="original-price">{formatPrice(item.product.price * item.quantity)}</span>
+                  )}
+              </div>
             </div>
           </div>
         ))}

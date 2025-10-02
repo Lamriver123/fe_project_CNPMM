@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Product } from "../../../types/Product.ts";
 import { Navigate, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 import {
   FiDollarSign,
   FiShoppingCart,
@@ -254,6 +255,18 @@ export default function DashboardPage() {
           </BarChart>
         </ResponsiveContainer>
         </div>
+
+        {/* Toast container phải có */}
+      <ToastContainer 
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
         
 
       </div>

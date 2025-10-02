@@ -7,6 +7,7 @@ import EmptyCart from "../../components/cart/EmptyCart.tsx";
 import { useCart } from "../../hooks/useCart.ts";
 import { paymentApi } from "../../api/paymentApi.ts";
 import { voucherApi } from "../../api/voucherApi.ts";
+import { toast, ToastContainer } from "react-toastify";
 import { Modal, Select, Tag, InputNumber } from "antd";
 import "./CartPage.css";
 
@@ -324,6 +325,17 @@ const CartPage = () => {
           <p style={{ fontSize: "18px", margin: 0 }}>{modal.message}</p>
         </div>
       </Modal>
+
+      <ToastContainer 
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
     </div>
   );
 };
