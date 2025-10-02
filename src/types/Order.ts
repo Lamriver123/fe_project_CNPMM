@@ -49,9 +49,10 @@ export interface Order {
   status: string;        // "paid", "pending", ...
   statusOrder: string;   // "pending", ...
   isDelivered: boolean;
+  usedXu: number;
   createdAt: string;
   updatedAt: string;
-  __v: number;
+  __v: number; 
   paymentInfo: PaymentInfo;
 }
 

@@ -23,8 +23,8 @@
   font-size: 14px;
 }
 
-.status.new { background: #fff3cd; color: #856404; }
-.status.confirmed { background: #e8f5e9; color: #2e7d32; }
+.status.pending { background: #fff3cd; color: #856404; }
+.status.waitdelivered { background: #e8f5e9; color: #2e7d32; }
 .status.preparing { background: #e3f2fd; color: #1565c0; }
 .status.delivering { background: #e1f5fe; color: #0288d1; }
 .status.completed { background: #d0f0c0; color: #2e7d32; }
@@ -127,4 +127,45 @@
 .btn:hover {
   transform: translateY(-2px) scale(1.03);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.order-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+  font-size: 14px;
+  color: #555;
+}
+
+.footer-left p {
+  margin: 2px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #666;
+}
+
+.footer-left i {
+  color: #1976d2;
+}
+
+.footer-right {
+  text-align: right;
+}
+
+.total-label {
+  display: block;
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 4px;
+}
+
+.total-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #d32f2f;
 }

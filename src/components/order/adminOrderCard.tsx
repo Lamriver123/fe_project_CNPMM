@@ -8,12 +8,12 @@ type Props = {
 };
 
 const statusText: Record<string, string> = {
-  NEW: "Chờ xác nhận",
-  CONFIRMED: "Đã xác nhận",
-  PREPARING: "Chuẩn bị hàng",
-  DELIVERING: "Đang giao",
-  COMPLETED: "Hoàn thành",
-  CANCELLED: "Đã hủy",
+  pending : "Chờ xác nhận",
+  preparing: "Chuẩn bị hàng",
+  delivering: "Đang giao",
+  waitdelivered: "Chờ khách hàng xác nhận",
+  delivered: "Hoàn thành",
+  cancelled: "Đã hủy",
 };
 
 const adminOrderCard: React.FC<Props> = ({ order, onUpdateStatus }) => {
@@ -23,8 +23,13 @@ const adminOrderCard: React.FC<Props> = ({ order, onUpdateStatus }) => {
       <div className="order-header">
         <span>Mã đơn: {order._id}</span>
         <span className={`status ${order.statusOrder?.toLowerCase()}`}>
-          {statusText[order.statusOrder] || order.statusOrder}
+          {order.statusOrder === "delivering"
+            ? order.isDelivered === true
+              ? statusText["waitdelivered"]
+              : statusText[order.statusOrder] || order.statusOrder
+            : statusText[order.statusOrder] || order.statusOrder}
         </span>
+
       </div>
 
       {/* Buyer */}
@@ -51,57 +56,55 @@ const adminOrderCard: React.FC<Props> = ({ order, onUpdateStatus }) => {
 
       {/* Footer */}
       <div className="order-footer">
-        <span>Ngày đặt: {new Date(order.createdAt).toLocaleDateString()}</span>
-        <span className="total">
-          Tổng: {order.totalPrice.toLocaleString()} đ
-        </span>
+        <div className="footer-left">
+          <p><i className="fas fa-calendar-alt"></i> Ngày đặt: {new Date(order.createdAt).toLocaleDateString()}</p>
+          <p><i className="fas fa-clock"></i> Cập nhật: {new Date(order.updatedAt).toLocaleDateString()}</p>
+        </div>
+        <div className="footer-right">
+          <span className="total-label">Tổng tiền thanh toán:</span>
+          <span className="total-value">{order.totalPrice.toLocaleString()} đ</span>
+        </div>
       </div>
+
 
       {/* Actions */}
       <div className="order-actions">
-        {order.statusOrder === "NEW" && (
+        {order.statusOrder === "pending" && (
           <>
             <button
               className="btn primary"
-              onClick={() => onUpdateStatus(order._id, "CONFIRMED")}
+              onClick={() => onUpdateStatus(order._id, "preparing")}
             >
               Duyệt đơn
             </button>
             <button
               className="btn danger"
-              onClick={() => onUpdateStatus(order._id, "CANCELLED")}
+              onClick={() => onUpdateStatus(order._id, "cancelled")}
             >
               Hủy đơn
             </button>
           </>
         )}
 
-        {order.statusOrder === "CONFIRMED" && (
+        {order.statusOrder === "preparing" && (
           <button
             className="btn primary"
-            onClick={() => onUpdateStatus(order._id, "PREPARING")}
+            onClick={() => onUpdateStatus(order._id, "delivering")}
           >
-            Chuyển sang chuẩn bị
+            Bắt đầu giao hàng
           </button>
         )}
 
-        {order.statusOrder === "PREPARING" && (
+        {order.statusOrder === "delivering" && order.isDelivered ===false && (
           <button
             className="btn primary"
-            onClick={() => onUpdateStatus(order._id, "DELIVERING")}
+            onClick={() => onUpdateStatus(order._id, "delivered")}
           >
-            Giao hàng
+            Giao hàng thành công
           </button>
         )}
 
-        {order.statusOrder === "DELIVERING" && (
-          <button
-            className="btn primary"
-            onClick={() => onUpdateStatus(order._id, "COMPLETED")}
-          >
-            Hoàn thành
-          </button>
-        )}
+        
       </div>
     </div>
   );
