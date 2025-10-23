@@ -34,14 +34,14 @@ interface RevenueStat {
 }
 
 interface Summary {
-  revenue: string; // đã format sang $xx,xxx
+  revenue: string;
   orders: number;
   users: number;
-  growth: string; // ví dụ "+15%"
+  growth: string;
 }
 
 interface RevenueApiResponse {
-  date: string;   // backend trả "2025-09"
+  date: string;
   revenue: number;
   orders: number;
 }
@@ -51,7 +51,7 @@ interface NewUserApiResponse {
   users: number
 }
 
-const StatCard = ({ icon: Icon, title, value, color }: any) => (
+const StatCard = ({ icon: Icon, title, value, color, hint }: any) => (
   <div className="stat-card">
     <div className={`stat-icon ${color}`}>
       <Icon className="icon" />
@@ -59,31 +59,32 @@ const StatCard = ({ icon: Icon, title, value, color }: any) => (
     <div className="stat-info">
       <p className="stat-title">{title}</p>
       <h2 className="stat-value">{value}</h2>
+      {hint && <span className="stat-hint">{hint}</span>}
     </div>
   </div>
 );
 
 export default function DashboardPage() {
-  
   const navigate = useNavigate();
   const [from, setFrom] = useState("2025-01-01");
   const [to, setTo] = useState("2025-12-31");
   const [userData, setUserData] = useState<{ date: string; users: number }[]>([]);
   const [chartData, setChartData] = useState<RevenueStat[]>([]);
   const [summary, setSummary] = useState<Summary>({
-    revenue: "0VND",
+    revenue: "0 VND",
     orders: 0,
     users: 0,
     growth: "+0%",
   });
-
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const topSoldProducts = await get10BestSellerProducts(); // trả về Product[]
-        setProducts(topSoldProducts);
+        const topSoldProducts = await get10BestSellerProducts();
+        // get10BestSellerProducts() trả về AxiosResponse<Product[]>
+        // nên lấy .data để có Product[]
+        setProducts(topSoldProducts.data);
       } catch (e) {
         console.log(e);
       }
@@ -91,18 +92,14 @@ export default function DashboardPage() {
     fetchData();
   }, []);
 
-
-
   useEffect(() => {
-  const fetchData = async () => {
-    try {
-      // Gọi 2 API song song
-      const [revenueRes, usersRes] = await Promise.all([
-        getRevenueStats(from, to, "month"),
-        getNewUsers(from, to, "month"),
+    const fetchData = async () => {
+      try {
+        const [revenueRes, usersRes] = await Promise.all([
+          getRevenueStats(from, to, "month"),
+          getNewUsers(from, to, "month"),
         ]);
 
-        // Format revenue data
         const apiData: RevenueStat[] = revenueRes.map((d: RevenueApiResponse) => {
           const monthIndex = parseInt(d.date.split("-")[1]) - 1;
           const monthNames = [
@@ -117,7 +114,6 @@ export default function DashboardPage() {
         });
         setChartData(apiData);
 
-        // Format user data
         const usersApiData : NewUserApiResponse[] = usersRes.map((d: NewUserApiResponse) => {
           return {
             date: d.date,
@@ -126,7 +122,6 @@ export default function DashboardPage() {
         });
         setUserData(usersApiData);
 
-        // Tổng hợp stat card
         const totalRevenue = apiData.reduce((sum, d) => sum + d.revenue, 0);
         const totalOrders = apiData.reduce((sum, d) => sum + d.orders, 0);
         const totalUsers = usersApiData.reduce((sum, d) => sum + d.users, 0);
@@ -135,7 +130,7 @@ export default function DashboardPage() {
           revenue: `${totalRevenue.toLocaleString()} VND`,
           orders: totalOrders,
           users: totalUsers,
-          growth: "+15%", // TODO: có thể tính growth nếu cần
+          growth: "+15%",
         });
       } catch (err) {
         console.error("Fetch error:", err);
@@ -147,117 +142,108 @@ export default function DashboardPage() {
 
   return (
     <div className="dashboard">
-      {/* Header */}
       <div className="dashboard-header">
-        <h2 className="dashboard-title">📊 Dashboard</h2>
-        <div className="dashboard-filters">
-  <label>
-    📅 Từ ngày:
-    <input
-      type="date"
-      value={from}
-      onChange={(e) => setFrom(e.target.value)}
-      className="dashboard-input"
-    />
-  </label>
+        <div className="title-block">
+          <h2 className="dashboard-title">Dashboard</h2>
+          <p className="dashboard-subtitle">Tổng quan hoạt động — Doanh thu, đơn hàng và người dùng</p>
+        </div>
 
-  <label>
-    📅 Đến ngày:
-    <input
-      type="date"
-      value={to}
-      onChange={(e) => setTo(e.target.value)}
-      className="dashboard-input"
-    />
-  </label>
-</div>
-
+        <div className="controls">
+          <label className="control-item">
+            Từ
+            <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+          </label>
+          <label className="control-item">
+            Đến
+            <input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+          </label>
+        </div>
       </div>
 
-      {/* Stat Cards */}
       <div className="stats-grid">
-        <StatCard icon={FiDollarSign} title="Doanh thu" value={summary.revenue} color="green" />
-        <StatCard icon={FiShoppingCart} title="Đơn hàng" value={summary.orders} color="blue" />
-        <StatCard icon={FiUsers} title="Người dùng mới" value={summary.users} color="purple" />
-        <StatCard icon={FiTrendingUp} title="Tăng trưởng" value={summary.growth} color="orange" />
+        <StatCard icon={FiDollarSign} title="Doanh thu" value={summary.revenue} color="green" hint="Tổng trong khoảng" />
+        <StatCard icon={FiShoppingCart} title="Đơn hàng" value={summary.orders} color="blue" hint="Số đơn đã xử lý" />
+        <StatCard icon={FiUsers} title="Người dùng mới" value={summary.users} color="purple" hint="Đăng ký trong khoảng" />
+        <StatCard icon={FiTrendingUp} title="Tăng trưởng" value={summary.growth} color="orange" hint="So với kỳ trước" />
       </div>
 
-      {/* Charts */}
-      <div className="charts-grid">
+      <div className="charts-wrap">
         <div className="chart-box">
-          <h3 className="chart-title">Doanh thu theo tháng</h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <div className="chart-head">
+            <h3>Doanh thu theo tháng</h3>
+          </div>
+          <ResponsiveContainer width="100%" height={280}>
             <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="revenue" fill="#34d399" name="Doanh thu" />
+              <Bar dataKey="revenue" fill="#10b981" name="Doanh thu" />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         <div className="chart-box">
-          <h3 className="chart-title">Đơn hàng</h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <div className="chart-head">
+            <h3>Đơn hàng theo tháng</h3>
+          </div>
+          <ResponsiveContainer width="100%" height={280}>
             <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="orders" stroke="#3b82f6" name="Đơn hàng" />
+              <Line type="monotone" dataKey="orders" stroke="#3b82f6" name="Đơn hàng" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
         </div>
-      </div>
 
-        {/* Người dùng mới */}
         <div className="chart-box">
-          <h3 className="chart-title">Người dùng mới</h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <div className="chart-head">
+            <h3>Người dùng mới</h3>
+          </div>
+          <ResponsiveContainer width="100%" height={220}>
             <BarChart data={userData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
+              <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+              <XAxis dataKey="date" tickFormatter={(d) => d.split("-")[1]} />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="users" fill="#60a5fa" name="Người dùng mới" />
+              <Bar dataKey="users" fill="#60a5fa" name="Người dùng" />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
-        <div className="chart-box">
-          <h3 className="chart-title">Top 10 sản phẩm bán chạy</h3>
-          <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={products}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" tick={{ fontSize: 12 }} interval={0} angle={-30} textAnchor="end" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar
-              dataKey="sold"
-              name="Đã bán"
-              fill="#f97316"
-              // ⬇️ Move the onClick handler to the Bar component
-              onClick={(data : Product, index) => {
-                // 'data' here is the actual data object (the Product) for the clicked bar
-                console.log("Product clicked:", data);
-                // Assuming 'data' is of type Product
-        
-                if (data && data._id) {
-                  navigate(`/products/${data._id}`);
-                }
-              }}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+        <div className="chart-box products-box">
+          <div className="chart-head">
+            <h3>Top sản phẩm bán chạy</h3>
+          </div>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={products}>
+              <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
+              <XAxis dataKey="name" tick={{ fontSize: 12 }} interval={0} angle={-30} textAnchor="end" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar
+                dataKey="sold"
+                name="Đã bán"
+                fill="#fb923c"
+                onClick={(barData : any) => {
+                  const data = barData && barData.activePayload && barData.activePayload[0] && barData.activePayload[0].payload ? barData.activePayload[0].payload : barData;
+                  if (data && data._id) {
+                    navigate(`/products/${data._id}`);
+                  }
+                }}
+              />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
+      </div>
 
-        {/* Toast container phải có */}
-      <ToastContainer 
+      <ToastContainer
         position="top-right"
         autoClose={2000}
         hideProgressBar={false}
@@ -267,8 +253,6 @@ export default function DashboardPage() {
         draggable
         theme="colored"
       />
-        
-
-      </div>
+    </div>
   );
 }

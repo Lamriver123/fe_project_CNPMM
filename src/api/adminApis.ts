@@ -32,3 +32,11 @@ export const get10BestSellerProducts = async () => {
     console.log(res)
     return res;
 }
+
+export const getAllUsers = async (page = 1, limit = 5, keyword = "") => {
+  const res = await axiosClient.get("/admin/users", {
+    params: { page, limit, keyword },
+  });
+  return res;
+};
+

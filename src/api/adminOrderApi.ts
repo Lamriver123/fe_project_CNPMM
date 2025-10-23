@@ -24,4 +24,14 @@ export const adminOrderApi = {
     );
     return res.data;
   },
+
+  getOrdersByUserId: async (userId: string) => {
+    const res = await axiosClient.get<{
+      success: boolean;
+      message: string;
+      data: { orders: Order[] };
+    }>(`/orders/user/${userId}`);
+
+    return res.data ?? [];
+  },
 };
