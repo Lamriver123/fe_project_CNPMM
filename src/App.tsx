@@ -14,11 +14,6 @@ import AdminUsersPage from "./pages/Admin/users/AdminUsersPage.tsx";
 import ClientLayout from "./components/layout/ClientLayout.tsx";
 import AdminLayout from "./components/layout/Admin/AdminLayout.tsx";
 
-import Body from "./components/layout/Body.tsx";
-import Footer from "./components/layout/Footer.tsx";
-import Header from "./components/layout/Header.tsx";
-import Navbar from "./components/layout/Navbar.tsx";
-
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage.tsx";
 import HomePage from "./pages/auth/HomePage.tsx";
 import LoginPage from "./pages/auth/LoginPage.tsx";
@@ -36,6 +31,8 @@ import { getSocket } from "./utils/socket.ts";
 
 import { PrivateRoute } from "./components/PrivateRoute.tsx";
 import { AdminRoute } from "./components/AdminRoute.tsx";
+import CheckoutPage from "./pages/Checkout/CheckoutPage.tsx";
+import { ToastContainer } from "react-toastify";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -75,15 +72,16 @@ export default function App() {
 
 
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Client */}
-        
-        <Route element={
-          <PrivateRoute>
-            <ClientLayout />
-          </PrivateRoute>
-          
+    <>
+      <BrowserRouter>
+        <Routes>
+          {/* Client */}
+
+          <Route element={
+            <PrivateRoute>
+              <ClientLayout />
+            </PrivateRoute>
+
           }>
             <Route path="/" element={<Navigate to="/home" />} />
             <Route path="/home" element={<HomePage />} />
@@ -97,21 +95,35 @@ export default function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/cart" element={<CartPage />} />
-        </Route>
+            <Route path="/checkout" element={<CheckoutPage />} />
+          </Route>
 
-        {/* Admin */}
-        <Route path="/admin" element={
-           <AdminRoute>
+          {/* Admin */}
+          <Route path="/admin" element={
+            <AdminRoute>
               <AdminLayout />
-           </AdminRoute>}>
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="orders" element={<AdminOrdersPage />} />
-          <Route path="products" element={<AdminProductsPage />} />
-          {/* <Route path="reports" element={<AdminReportsPage />} /> */}
-          <Route path="users" element={<AdminUsersPage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+            </AdminRoute>}>
+            <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="orders" element={<AdminOrdersPage />} />
+            <Route path="products" element={<AdminProductsPage />} />
+            {/* <Route path="reports" element={<AdminReportsPage />} /> */}
+            <Route path="users" element={<AdminUsersPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+    </>
   );
 
 

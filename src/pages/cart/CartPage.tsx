@@ -5,7 +5,7 @@ import { CartItem as CartItemType } from "../../types/Cart.ts";
 import CartItem from "../../components/cart/CartItem.tsx";
 import EmptyCart from "../../components/cart/EmptyCart.tsx";
 import { useCart } from "../../hooks/useCart.ts";
-import { paymentApi } from "../../api/paymentApi.ts";
+// import { paymentApi } from "../../api/paymentApi.ts";
 import { voucherApi } from "../../api/voucherApi.ts";
 import { toast, ToastContainer } from "react-toastify";
 import { Modal, Select, Tag, InputNumber } from "antd";
@@ -92,61 +92,79 @@ const CartPage = () => {
   };
 
   const handleCheckout = async () => {
-    try {
-      const res = await paymentApi.createQr({
-        items: selectedItems,
-        voucherCode: selectedVoucher?.code || null,
-        usedXu: Number(usedXu) || 0,
-      });
-
-      if (res.success && res.url) {
-        const paymentWindow = window.open(res.url, "_blank");
-
-        if (!paymentWindow) {
-          Modal.error({ title: "Lỗi", content: "Không thể mở tab thanh toán. Vui lòng kiểm tra trình duyệt." });
-          return;
-        }
-
-        // Lắng nghe kết quả từ tab thanh toán
-        const handleMessage = (event: MessageEvent) => {
-          if (event.origin !== window.location.origin) return; // bảo mật
-
-          const { status, orderId } = event.data;
-          let message = "";
-          switch (status) {
-            case "paid":
-              message = "🎉 Thanh toán thành công!";
-              // Clear selected items after successful payment
-              setSelectedItems([]);
-              break;
-            case "failed":
-              message = "❌ Thanh toán thất bại!";
-              break;
-            case "invalid":
-              message = "⚠️ Giao dịch không hợp lệ!";
-              break;
-            case "notfound":
-              message = "🔎 Không tìm thấy đơn hàng!";
-              break;
-            default:
-              message = "Có lỗi xảy ra trong quá trình thanh toán.";
-          }
-          console.log(">> chceckout message:", message);
-          setModal({ visible: true, message });
-          refetch();
-
-          // Sau khi nhận thông báo xong, bỏ listener
-          window.removeEventListener("message", handleMessage);
-        };
-
-        window.addEventListener("message", handleMessage);
-      } else {
-        Modal.error({ title: "Lỗi", content: "Không tạo được link thanh toán" });
-      }
-    } catch (err) {
-      console.error("Error creating QR payment:", err);
-      Modal.error({ title: "Lỗi", content: "Có lỗi xảy ra khi tạo thanh toán" });
+    if (selectedItems.length === 0) {
+      toast.warn("Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
+      return;
     }
+
+    // Lọc ra các sản phẩm đã chọn để gửi thông tin chi tiết qua state
+    const itemsToCheckout = items.filter((item: CartItemType) =>
+      selectedItems.includes(item.product._id)
+    );
+
+    // Chuyển hướng đến trang /checkout và truyền dữ liệu qua state
+    navigate("/checkout", {
+      state: {
+        items: itemsToCheckout,
+        voucher: selectedVoucher,
+        xu: usedXu,
+      },
+    });
+    // try {
+    //   const res = await paymentApi.createQr({
+    //     items: selectedItems,
+    //     voucherCode: selectedVoucher?.code || null,
+    //     usedXu: Number(usedXu) || 0,
+    //   });
+
+    //   if (res.success && res.url) {
+    //     const paymentWindow = window.open(res.url, "_blank");
+
+    //     if (!paymentWindow) {
+    //       Modal.error({ title: "Lỗi", content: "Không thể mở tab thanh toán. Vui lòng kiểm tra trình duyệt." });
+    //       return;
+    //     }
+
+    //     // Lắng nghe kết quả từ tab thanh toán
+    //     const handleMessage = (event: MessageEvent) => {
+    //       if (event.origin !== window.location.origin) return; // bảo mật
+
+    //       const { status, orderId } = event.data;
+    //       let message = "";
+    //       switch (status) {
+    //         case "paid":
+    //           message = "🎉 Thanh toán thành công!";
+    //           // Clear selected items after successful payment
+    //           setSelectedItems([]);
+    //           break;
+    //         case "failed":
+    //           message = "❌ Thanh toán thất bại!";
+    //           break;
+    //         case "invalid":
+    //           message = "⚠️ Giao dịch không hợp lệ!";
+    //           break;
+    //         case "notfound":
+    //           message = "🔎 Không tìm thấy đơn hàng!";
+    //           break;
+    //         default:
+    //           message = "Có lỗi xảy ra trong quá trình thanh toán.";
+    //       }
+    //       console.log(">> chceckout message:", message);
+    //       setModal({ visible: true, message });
+    //       refetch();
+
+    //       // Sau khi nhận thông báo xong, bỏ listener
+    //       window.removeEventListener("message", handleMessage);
+    //     };
+
+    //     window.addEventListener("message", handleMessage);
+    //   } else {
+    //     Modal.error({ title: "Lỗi", content: "Không tạo được link thanh toán" });
+    //   }
+    // } catch (err) {
+    //   console.error("Error creating QR payment:", err);
+    //   Modal.error({ title: "Lỗi", content: "Có lỗi xảy ra khi tạo thanh toán" });
+    // }
   };
 
 
@@ -326,7 +344,7 @@ const CartPage = () => {
         </div>
       </Modal>
 
-      <ToastContainer 
+      <ToastContainer
         position="top-right"
         autoClose={2000}
         hideProgressBar={false}

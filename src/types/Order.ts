@@ -1,4 +1,6 @@
 // src/types/Orders.ts
+import { DeliveryAddress } from './deliveryAddress';
+
 export interface OrderUser {
   _id: string;
   username: string;
@@ -50,9 +52,10 @@ export interface Order {
   statusOrder: string;   // "pending", ...
   isDelivered: boolean;
   usedXu: number;
+  deliveryAddressId: DeliveryAddress; // Thông tin địa chỉ giao hàng đầy đủ
   createdAt: string;
   updatedAt: string;
-  __v: number; 
+  __v: number;
   paymentInfo: PaymentInfo;
 }
 

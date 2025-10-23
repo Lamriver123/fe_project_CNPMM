@@ -48,7 +48,7 @@
 .order-card {
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
   padding: 16px;
 }
@@ -67,12 +67,35 @@
   font-size: 14px;
 }
 
-.status.pending { background: #f3f3f3; color: #e7e42d; }
-.status.confirmed { background: #e8f5e9; color: #2e7d32; }
-.status.preparing { background: #fff8e1; color: #f9a825; }
-.status.delivering { background: #e1f5fe; color: #0288d1; }
-.status.delivered { background: #e8f5e9; color: #2e7d32; }
-.status.cancelled { background: #ffebee; color: #c62828; }
+.status.pending {
+  background: #f3f3f3;
+  color: #e7e42d;
+}
+
+.status.confirmed {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status.preparing {
+  background: #fff8e1;
+  color: #f9a825;
+}
+
+.status.delivering {
+  background: #e1f5fe;
+  color: #0288d1;
+}
+
+.status.delivered {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status.cancelled {
+  background: #ffebee;
+  color: #c62828;
+}
 
 .order-items {
   border-top: 1px solid #eee;
@@ -104,10 +127,10 @@
 
 
 .item-info .price {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
 }
 
 
@@ -131,6 +154,7 @@
   color: #777;
   margin-top: 40px;
 }
+
 .item-actions {
   margin-top: 6px;
   display: flex;
@@ -167,10 +191,12 @@
 }
 
 .btn:hover {
-  opacity: 1; /* giữ nguyên không mờ */
+  opacity: 1;
+  /* giữ nguyên không mờ */
   transform: translateY(-2px) scale(1.02);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  filter: brightness(1.05); /* làm màu sáng hơn một chút */
+  filter: brightness(1.05);
+  /* làm màu sáng hơn một chút */
 }
 
 .order-actions {
@@ -189,3 +215,54 @@
   margin: 6px 0;
 }
 
+/* Delivery Address */
+.delivery-address {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  margin: 12px 0;
+  overflow: hidden;
+}
+
+.delivery-address-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.delivery-address-header:hover {
+  background-color: #e9ecef;
+}
+
+.delivery-address-header h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #495057;
+  font-weight: 600;
+}
+
+.expand-icon {
+  font-size: 14px;
+  color: #6c757d;
+  transition: transform 0.2s ease;
+}
+
+.delivery-address-details {
+  padding: 0 12px 12px 12px;
+  border-top: 1px solid #e9ecef;
+  background-color: #ffffff;
+}
+
+.delivery-address-details p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.delivery-address-details p strong {
+  color: #495057;
+  font-weight: 500;
+}

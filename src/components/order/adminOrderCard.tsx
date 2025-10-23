@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Order } from "../../types/Order.ts";
 import "./adminOrderCard.css";
 import { formatPrice } from "../../utils/format.ts";
+import { DownOutlined, RightOutlined } from '@ant-design/icons';
 
 type Props = {
   order: Order;
@@ -9,7 +10,7 @@ type Props = {
 };
 
 const statusText: Record<string, string> = {
-  pending : "Chờ xác nhận",
+  pending: "Chờ xác nhận",
   preparing: "Chuẩn bị hàng",
   delivering: "Đang giao",
   waitdelivered: "Chờ khách hàng xác nhận",
@@ -17,7 +18,13 @@ const statusText: Record<string, string> = {
   cancelled: "Đã hủy",
 };
 
-const adminOrderCard: React.FC<Props> = ({ order, onUpdateStatus }) => {
+const AdminOrderCard: React.FC<Props> = ({ order, onUpdateStatus }) => {
+  const [isAddressExpanded, setIsAddressExpanded] = useState(false);
+
+  const toggleAddressExpand = () => {
+    setIsAddressExpanded(!isAddressExpanded);
+  };
+
   return (
     <div className="order-card">
       {/* Header */}
@@ -39,6 +46,33 @@ const adminOrderCard: React.FC<Props> = ({ order, onUpdateStatus }) => {
         <p><b>Email:</b> {order.user.email}</p>
       </div>
 
+      {/* Delivery Address */}
+      {order.deliveryAddressId && (
+        <div className="delivery-address">
+          <div
+            className="delivery-address-header"
+            onClick={toggleAddressExpand}
+          >
+            <h4>Địa chỉ giao hàng</h4>
+            {isAddressExpanded ? (
+              <DownOutlined className="expand-icon" />
+            ) : (
+              <RightOutlined className="expand-icon" />
+            )}
+          </div>
+          {isAddressExpanded && (
+            <div className="delivery-address-details">
+              <p><b>Tên người nhận:</b> {order.deliveryAddressId.nameBuyer}</p>
+              <p><b>Số điện thoại:</b> {order.deliveryAddressId.phoneNumber}</p>
+              <p><b>Địa chỉ:</b> {order.deliveryAddressId.addressName}</p>
+              {order.deliveryAddressId.note && (
+                <p><b>Ghi chú:</b> {order.deliveryAddressId.note}</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Items */}
       <div className="order-items">
         {order.items.map((item) => (
@@ -48,10 +82,10 @@ const adminOrderCard: React.FC<Props> = ({ order, onUpdateStatus }) => {
               <p className="name">{item.product.name}</p>
               <p>Số lượng: {item.quantity}</p>
               <div className="price">
-                  <span className="current-price">{formatPrice(item.product.price * item.quantity-item.product.price * item.quantity*item.product.discount*0.01 )}</span>
-                  {item.product.discount > 0 && (
-                      <span className="original-price">{formatPrice(item.product.price * item.quantity)}</span>
-                  )}
+                <span className="current-price">{formatPrice(item.product.price * item.quantity - item.product.price * item.quantity * item.product.discount * 0.01)}</span>
+                {item.product.discount > 0 && (
+                  <span className="original-price">{formatPrice(item.product.price * item.quantity)}</span>
+                )}
               </div>
             </div>
           </div>
@@ -99,7 +133,7 @@ const adminOrderCard: React.FC<Props> = ({ order, onUpdateStatus }) => {
           </button>
         )}
 
-        {order.statusOrder === "delivering" && order.isDelivered ===false && (
+        {order.statusOrder === "delivering" && order.isDelivered === false && (
           <button
             className="btn primary"
             onClick={() => onUpdateStatus(order._id, "delivered")}
@@ -108,10 +142,10 @@ const adminOrderCard: React.FC<Props> = ({ order, onUpdateStatus }) => {
           </button>
         )}
 
-        
+
       </div>
     </div>
   );
 };
 
-export default adminOrderCard;
+export default AdminOrderCard;

@@ -1,7 +1,7 @@
 .order-card {
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
   margin-bottom: 24px;
   padding: 18px;
   border-left: 5px solid #1976d2;
@@ -23,12 +23,35 @@
   font-size: 14px;
 }
 
-.status.pending { background: #fff3cd; color: #856404; }
-.status.waitdelivered { background: #e8f5e9; color: #2e7d32; }
-.status.preparing { background: #e3f2fd; color: #1565c0; }
-.status.delivering { background: #e1f5fe; color: #0288d1; }
-.status.completed { background: #d0f0c0; color: #2e7d32; }
-.status.cancelled { background: #ffebee; color: #c62828; }
+.status.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status.waitdelivered {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status.preparing {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.status.delivering {
+  background: #e1f5fe;
+  color: #0288d1;
+}
+
+.status.completed {
+  background: #d0f0c0;
+  color: #2e7d32;
+}
+
+.status.cancelled {
+  background: #ffebee;
+  color: #c62828;
+}
 
 /* Buyer info */
 .buyer-info {
@@ -126,7 +149,7 @@
 
 .btn:hover {
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .order-footer {
@@ -168,4 +191,56 @@
   font-size: 18px;
   font-weight: bold;
   color: #d32f2f;
+}
+
+/* Delivery Address */
+.delivery-address {
+  background: #e8f4fd;
+  border: 1px solid #bbdefb;
+  border-radius: 8px;
+  margin: 12px 0;
+  overflow: hidden;
+}
+
+.delivery-address-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.delivery-address-header:hover {
+  background-color: #bbdefb;
+}
+
+.delivery-address-header h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.expand-icon {
+  font-size: 14px;
+  color: #1976d2;
+  transition: transform 0.2s ease;
+}
+
+.delivery-address-details {
+  padding: 0 12px 12px 12px;
+  border-top: 1px solid #bbdefb;
+  background-color: #ffffff;
+}
+
+.delivery-address-details p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #424242;
+}
+
+.delivery-address-details p b {
+  color: #1976d2;
+  font-weight: 500;
 }

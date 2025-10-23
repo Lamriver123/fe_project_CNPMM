@@ -7,6 +7,7 @@ import RewardModal from "../../components/comments/RewardModal.tsx";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { formatPrice } from "../../utils/format.ts";
+import { DownOutlined, RightOutlined } from '@ant-design/icons';
 
 
 type OrderStatus =
@@ -40,6 +41,7 @@ const OrdersPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [orders, setOrders] = useState<Order[]>([]);
   const [expandedOrders, setExpandedOrders] = useState<string[]>([]);
+  const [expandedAddresses, setExpandedAddresses] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reward, setReward] = useState<any>(null);
@@ -92,6 +94,12 @@ const OrdersPage: React.FC = () => {
   const toggleExpand = (id: string) => {
     setExpandedOrders((prev) =>
       prev.includes(id) ? prev.filter((o) => o !== id) : [...prev, id]
+    );
+  };
+
+  const toggleAddressExpand = (orderId: string) => {
+    setExpandedAddresses((prev) =>
+      prev.includes(orderId) ? prev.filter((id) => id !== orderId) : [...prev, orderId]
     );
   };
 
@@ -184,10 +192,10 @@ const OrdersPage: React.FC = () => {
                           <p className="name">{item.product.name}</p>
                           <p className="qty">Số lượng: {item.quantity}</p>
                           <div className="price">
-                              <span className="current-price">{formatPrice(item.product.price * item.quantity-item.product.price * item.quantity*item.product.discount*0.01 )}</span>
-                              {item.product.discount > 0 && (
-                                  <span className="original-price">{formatPrice(item.product.price * item.quantity)}</span>
-                              )}
+                            <span className="current-price">{formatPrice(item.product.price * item.quantity - item.product.price * item.quantity * item.product.discount * 0.01)}</span>
+                            {item.product.discount > 0 && (
+                              <span className="original-price">{formatPrice(item.product.price * item.quantity)}</span>
+                            )}
                           </div>
                           {order.statusOrder === "delivered" && (
                             <div className="item-actions">
@@ -238,6 +246,33 @@ const OrdersPage: React.FC = () => {
                   )}
                 </div>
 
+                {/* Delivery Address */}
+                {order.deliveryAddressId && (
+                  <div className="delivery-address">
+                    <div
+                      className="delivery-address-header"
+                      onClick={() => toggleAddressExpand(order._id)}
+                    >
+                      <h4>Địa chỉ nhận hàng</h4>
+                      {expandedAddresses.includes(order._id) ? (
+                        <DownOutlined className="expand-icon" />
+                      ) : (
+                        <RightOutlined className="expand-icon" />
+                      )}
+                    </div>
+                    {expandedAddresses.includes(order._id) && (
+                      <div className="delivery-address-details">
+                        <p><strong>Tên người nhận:</strong> {order.deliveryAddressId.nameBuyer}</p>
+                        <p><strong>Số điện thoại:</strong> {order.deliveryAddressId.phoneNumber}</p>
+                        <p><strong>Địa chỉ:</strong> {order.deliveryAddressId.addressName}</p>
+                        {order.deliveryAddressId.note && (
+                          <p><strong>Ghi chú:</strong> {order.deliveryAddressId.note}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <div className="order-footer">
                   <span>
                     Ngày đặt: {new Date(order.createdAt).toLocaleDateString()}
@@ -281,7 +316,7 @@ const OrdersPage: React.FC = () => {
       )}
 
       {/* Toast container phải có */}
-      <ToastContainer 
+      <ToastContainer
         position="top-right"
         autoClose={2000}
         hideProgressBar={false}
