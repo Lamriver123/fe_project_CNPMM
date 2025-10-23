@@ -6,6 +6,7 @@ import "./HomePage.css";
 import { productApi } from "../../api/productApi.ts";
 import { CategoryApi } from "../../api/categoryApi.ts";
 import { Category } from "../../types/Category.ts";
+import SearchBar from "../../components/layout/searchBar.tsx";
 // interface Product {
 //   id: number;
 //   name: string;
@@ -132,14 +133,14 @@ import { Category } from "../../types/Category.ts";
 
 
 export default function HomePage() {
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [keyword, setKeyword] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategory] = useState<Category[]>([]);
 
   const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory === "all" || product.category.name === selectedCategory;
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = product.name.toLowerCase().includes(keyword.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -150,19 +151,49 @@ export default function HomePage() {
     }).format(price);
   };
 
+  // useEffect(() => {
+  //   const productRes = async () => {
+  //     const response = await productApi.getProducts();
+  //     setProducts(response.data || []);
+  //   }
+  //   productRes();
+  //   const cateRes = async () => {
+  //     const response = await CategoryApi.getCategories();
+  //     setCategory(response)
+  //   }
+  //   cateRes();
+  // }, []);
+    useEffect(() => {
+      console.log("🔥 useEffect triggered:", { selectedCategory, keyword });
+    const fetchProducts = async () => {
+      try {
+        const params: any = { page: 1, limit: 6, category: selectedCategory, keyword: keyword };
+        if (selectedCategory !== "") params.category = selectedCategory;
+        if (keyword.trim()) params.keyword = keyword;
+
+        const response = await productApi.getProducts(params.page, params.limit, params.category, keyword);
+        console.log("Fetched products:", response.data);
+        setProducts(response.data|| []);
+      } catch (error) {
+        console.error("Lỗi tải sản phẩm:", error);
+      }
+    };
+    fetchProducts();
+  }, [selectedCategory, keyword]);
+
+  // ✅ load categories 1 lần
   useEffect(() => {
-    const productRes = async () => {
-      const response = await productApi.getProducts();
-      setProducts(response.data || []);
-    }
-    productRes();
-    const cateRes = async () => {
+    const fetchCategories = async () => {
       const response = await CategoryApi.getCategories();
-      setCategory(response)
-    }
-    cateRes();
+      setCategory(response || []);
+      console.log("Categories fetched:", response);
+    };
+    fetchCategories();
   }, []);
 
+  const handleSearch = (keyword: string) => {
+    setKeyword(keyword);
+  };
   return (
     <div className="home-page">
       {/* Hero Section */}
@@ -211,24 +242,13 @@ export default function HomePage() {
       <section className="search-section">
         <div className="container">
           <div className="search-container">
-            <div className="search-box">
-              <input
-                type="text"
-                placeholder="Tìm kiếm sản phẩm..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-input"
-              />
-              <button className="search-btn">
-                <i className="bi bi-search"></i>
-              </button>
-            </div>
+            <SearchBar onSearch={handleSearch} /> 
             <div className="category-filters">
               {categories.map((category) => (
                 <button
                   key={category.name}
-                  className={`category-btn ${selectedCategory === category.name ? 'active' : ''}`}
-                  onClick={() => setSelectedCategory(category.name)}
+                  className={`category-btn ${selectedCategory === category._id ? 'active' : ''}`}
+                  onClick={() => setSelectedCategory(category._id)}
                 >
                   {category.name}
                 </button>
@@ -294,7 +314,7 @@ export default function HomePage() {
       <ProductsSection
         title="Sản phẩm nổi bật"
         subtitle="Bộ sưu tập độc quyền với thiết kế đẹp mắt và chất lượng cao"
-        products={filteredProducts}
+        products={products}
         formatPrice={formatPrice}
       />
 
