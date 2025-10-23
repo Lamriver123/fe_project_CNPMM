@@ -2,6 +2,7 @@ import { ReviewResponse } from '../types/Review';
 import axiosClient from './axiosClient.ts';
 
 interface CreateReviewData {
+  orderId: string;
   productId: string;
   rating: number;
   comment: string;

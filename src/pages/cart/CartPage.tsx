@@ -97,6 +97,17 @@ const CartPage = () => {
       return;
     }
 
+    // Kiểm tra xem người dùng có chọn voucher không và voucher đó có yêu cầu giá trị tối thiểu không
+    if (selectedVoucher && selectedVoucher.minOrderValue > 0) {
+      // So sánh tổng tiền hàng với giá trị tối thiểu của voucher
+      if (selectedTotal < selectedVoucher.minOrderValue) {
+        toast.error(
+          `Tổng tiền hàng phải đạt tối thiểu ${selectedVoucher.minOrderValue.toLocaleString()}đ để sử dụng voucher này.`
+        );
+        return;
+      }
+    }
+
     // Lọc ra các sản phẩm đã chọn để gửi thông tin chi tiết qua state
     const itemsToCheckout = items.filter((item: CartItemType) =>
       selectedItems.includes(item.product._id)
@@ -208,7 +219,7 @@ const CartPage = () => {
     }
   }
 
-  const finalPrice = Math.max(0, selectedTotal - discount - usedXu);
+  const finalPrice = Math.max(0, selectedTotal - discount - (usedXu || 0));
 
   return (
     <div className="cart-page">

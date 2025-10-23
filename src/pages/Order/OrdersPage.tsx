@@ -52,11 +52,13 @@ const OrdersPage: React.FC = () => {
     productId: string;
     productName: string;
     productImage: string;
+    orderId: string;
   }>({
     isOpen: false,
     productId: '',
     productName: '',
-    productImage: ''
+    productImage: '',
+    orderId: ''
   });
 
   // Gọi API mỗi khi đổi tab
@@ -115,12 +117,13 @@ const OrdersPage: React.FC = () => {
     );
   }
 
-  const handleReview = (productId: string, productName: string, productImage: string) => {
+  const handleReview = (orderId: string, productId: string, productName: string, productImage: string) => {
     setReviewModal({
       isOpen: true,
       productId,
       productName,
-      productImage
+      productImage,
+      orderId
     });
   };
 
@@ -129,7 +132,8 @@ const OrdersPage: React.FC = () => {
       isOpen: false,
       productId: '',
       productName: '',
-      productImage: ''
+      productImage: '',
+      orderId: ''
     });
   };
 
@@ -203,7 +207,7 @@ const OrdersPage: React.FC = () => {
                                 <button
                                   className="btn btn-warning btn-sm me-2 bg-opacity-25 hover-bg-opacity-50"
                                   style={{ backgroundColor: 'rgba(255,193,7,0.25)', borderColor: '#ffc107', color: '#856404' }}
-                                  onClick={() => handleReview(item.product._id, item.product.name, item.product.images[0]?.url || '')}
+                                  onClick={() => handleReview(order._id, item.product._id, item.product.name, item.product.images[0]?.url || '')}
                                 >
                                   <i className="bi bi-star me-1"></i>
                                   Đánh giá
@@ -304,6 +308,7 @@ const OrdersPage: React.FC = () => {
       <ReviewModal
         isOpen={reviewModal.isOpen}
         onClose={closeReviewModal}
+        orderId={reviewModal.orderId}
         productId={reviewModal.productId}
         productName={reviewModal.productName}
         productImage={reviewModal.productImage}

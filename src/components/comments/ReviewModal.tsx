@@ -6,6 +6,7 @@ import './ReviewModal.css';
 interface ReviewModalProps {
     isOpen: boolean;
     onClose: () => void;
+    orderId: string;
     productId: string;
     productName: string;
     productImage?: string;
@@ -16,6 +17,7 @@ interface ReviewModalProps {
 const ReviewModal: React.FC<ReviewModalProps> = ({
     isOpen,
     onClose,
+    orderId,
     productId,
     productName,
     productImage,
@@ -37,6 +39,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
         try {
             setSubmitting(true);
             const res = await reviewApi.createReview({
+                orderId,
                 productId,
                 rating,
                 comment: comment.trim()

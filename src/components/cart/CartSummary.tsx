@@ -17,8 +17,9 @@ export default function CartSummary({
     onCheckout,
     onContinueShopping
 }: CartSummaryProps) {
-    const priceAfterDiscount = Math.max(0, totalPrice - discount);
-    const shippingFee = priceAfterDiscount > 500000 ? 0 : 30000;
+    // const priceAfterDiscount = Math.max(0, totalPrice - discount);
+    // const shippingFee = priceAfterDiscount > 500000 ? 0 : 30000;
+    const shippingFee = totalPrice > 500000 ? 0 : 30000;
 
     return (
         <div className="cart-summary">
@@ -54,7 +55,7 @@ export default function CartSummary({
                 <div className="summary-row total-row">
                     <span>Tổng cộng:</span>
                     <span className="total-amount">
-                        {formatPrice(priceAfterDiscount + shippingFee)}
+                        {formatPrice(totalPrice + shippingFee)}
                     </span>
                 </div>
             </div>

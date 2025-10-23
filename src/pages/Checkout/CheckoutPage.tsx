@@ -156,10 +156,10 @@ const CheckoutPage = () => {
                     const { status } = event.data;
                     let message = "";
                     switch (status) {
-                        case "paid": message = "Thanh toán thành công!"; break;
-                        case "failed": message = "Thanh toán thất bại!"; break;
-                        case "invalid": message = "Giao dịch không hợp lệ!"; break;
-                        case "notfound": message = "Không tìm thấy đơn hàng!"; break;
+                        case "paid": message = "🎉 Thanh toán thành công!"; break;
+                        case "failed": message = "❌ Thanh toán thất bại!"; break;
+                        case "invalid": message = "⚠️ Giao dịch không hợp lệ!"; break;
+                        case "notfound": message = "🔎 Không tìm thấy đơn hàng!"; break;
                         default: message = "Có lỗi xảy ra trong quá trình thanh toán.";
                     }
 
@@ -182,83 +182,183 @@ const CheckoutPage = () => {
     }
 
     return (
-        <div className="checkout-page-redesigned">
-            <div className="checkout-container">
-                <div className="checkout-main">
-                    <h1 className="checkout-title"><ShoppingCartOutlined /> Xác nhận đơn hàng</h1>
+        <div className="checkout-page-wrapper">
+            <div className="checkout-page-header">
+                <div className="checkout-page-header-content">
+                    <h1 className="checkout-page-title">
+                        <ShoppingCartOutlined className="checkout-page-title-icon" />
+                        Xác nhận đơn hàng
+                    </h1>
+                    <p className="checkout-page-subtitle">Hoàn tất thông tin để hoàn thành đơn hàng</p>
+                </div>
+            </div>
+
+            <div className="checkout-page-container">
+                <div className="checkout-page-main">
                     <div className="delivery-address-section">
-                        <h2 className='section-title'><HomeOutlined /> Địa chỉ nhận hàng</h2>
-                        {addressLoading && <Spin />}
-                        {error && <p className="error-text">{error}</p>}
-                        <div className="address-grid">
+                        <div className="checkout-section-header">
+                            <h2 className='checkout-section-title'>
+                                <HomeOutlined className="checkout-section-icon" />
+                                Địa chỉ nhận hàng
+                            </h2>
+                            <p className="checkout-section-description">Chọn địa chỉ giao hàng cho đơn hàng của bạn</p>
+                        </div>
+
+                        {addressLoading && (
+                            <div className="checkout-loading-container">
+                                <Spin size="large" />
+                                <p>Đang tải địa chỉ...</p>
+                            </div>
+                        )}
+
+                        {error && (
+                            <div className="checkout-error-container">
+                                <p className="checkout-error-text">{error}</p>
+                            </div>
+                        )}
+
+                        <div className="checkout-address-grid">
                             {addresses.map((addr) => (
                                 <div
                                     key={addr._id}
-                                    className={`address-card ${selectedAddressId === addr._id ? 'selected' : ''}`}
+                                    className={`checkout-address-card ${selectedAddressId === addr._id ? 'selected' : ''}`}
                                     onClick={() => setSelectedAddressId(addr._id)}
                                 >
-                                    {addr.defaultAddress && <Tag className="default-tag" color="blue">Mặc định</Tag>}
-                                    <div className="address-card-info">
-                                        <p className="name">{addr.nameBuyer}</p>
-                                        <p className="phone">{addr.phoneNumber}</p>
-                                        <p className="address">{addr.addressName}</p>
-                                    </div>
-                                    <div className="address-actions">
-                                        <Button icon={<EditOutlined />} size="small" onClick={(e) => { e.stopPropagation(); handleOpenModal(addr); }} />
-                                        <Button icon={<DeleteOutlined />} size="small" danger onClick={(e) => { e.stopPropagation(); handleDelete(addr._id); }} />
+                                    {addr.defaultAddress && (
+                                        <div className="checkout-default-badge">
+                                            <Tag color="blue">Mặc định</Tag>
+                                        </div>
+                                    )}
+                                    <div className="checkout-address-card-content">
+                                        <div className="checkout-address-card-info">
+                                            <h4 className="name">{addr.nameBuyer}</h4>
+                                            <p className="phone">
+                                                <span className="checkout-info-label">SĐT:</span> {addr.phoneNumber}
+                                            </p>
+                                            <p className="address">
+                                                <span className="checkout-info-label">Địa chỉ:</span> {addr.addressName}
+                                            </p>
+                                            {addr.note && (
+                                                <p className="note">
+                                                    <span className="checkout-info-label">Ghi chú:</span> {addr.note}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div className="checkout-address-actions">
+                                            <Button
+                                                icon={<EditOutlined />}
+                                                size="small"
+                                                type="text"
+                                                onClick={(e) => { e.stopPropagation(); handleOpenModal(addr); }}
+                                            />
+                                            <Button
+                                                icon={<DeleteOutlined />}
+                                                size="small"
+                                                type="text"
+                                                danger
+                                                onClick={(e) => { e.stopPropagation(); handleDelete(addr._id); }}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             ))}
-                            <div className="add-address-card" onClick={() => handleOpenModal()}>
-                                <PlusOutlined />
-                                <span>Thêm địa chỉ mới</span>
+                            <div className="checkout-add-address-card" onClick={() => handleOpenModal()}>
+                                <div className="checkout-add-address-content">
+                                    <PlusOutlined className="checkout-add-icon" />
+                                    <span className="checkout-add-text">Thêm địa chỉ mới</span>
+                                    <p className="checkout-add-description">Thêm địa chỉ giao hàng mới</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="checkout-sidebar">
+                <div className="checkout-page-sidebar">
                     <div className="order-summary">
-                        <h2 className='section-title'>Tóm tắt đơn hàng</h2>
-                        <div className="summary-items">
+                        <div className="checkout-summary-header">
+                            <h2 className='checkout-section-title'>
+                                <ShoppingCartOutlined className="checkout-section-icon" />
+                                Tóm tắt đơn hàng
+                            </h2>
+                            <p className="checkout-summary-subtitle">{items.length} sản phẩm</p>
+                        </div>
+
+                        <div className="checkout-summary-items">
                             {items.map(item => (
-                                <div className="summary-item" key={item.product._id}>
-                                    <img src={item.product.images[0].url} alt={item.product.name} className="summary-item-img" />
-                                    <div className="summary-item-details">
-                                        <p className='summary-item-name'>{item.product.name}</p>
-                                        <p className='summary-item-qty'>SL: {item.quantity}</p>
+                                <div className="checkout-summary-item" key={item.product._id}>
+                                    <div className="checkout-summary-item-image">
+                                        <img src={item.product.images[0].url} alt={item.product.name} />
+                                        {item.product.discount > 0 && (
+                                            <div className="checkout-discount-badge">
+                                                -{item.product.discount}%
+                                            </div>
+                                        )}
                                     </div>
-                                    <p className='summary-item-price'>
-                                        {(item.product.price * (1 - (item.product.discount || 0) / 100) * item.quantity).toLocaleString()}đ
-                                    </p>
+                                    <div className="checkout-summary-item-details">
+                                        <h4 className='checkout-summary-item-name'>{item.product.name}</h4>
+                                        <p className='checkout-summary-item-qty'>Số lượng: {item.quantity}</p>
+                                        <div className="checkout-price-info">
+                                            <span className="checkout-current-price">
+                                                {(item.product.price * (1 - (item.product.discount || 0) / 100) * item.quantity).toLocaleString()}đ
+                                            </span>
+                                            {item.product.discount > 0 && (
+                                                <span className="checkout-original-price">
+                                                    {(item.product.price * item.quantity).toLocaleString()}đ
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             ))}
                         </div>
-                        <div className="summary-calculations">
-                            <div className="summary-line">
-                                <span>Tạm tính</span>
-                                <span>{subTotal.toLocaleString()}đ</span>
+
+                        <div className="checkout-summary-calculations">
+                            <div className="checkout-calculation-section">
+                                <div className="checkout-summary-line">
+                                    <span>Tạm tính</span>
+                                    <span>{subTotal.toLocaleString()}đ</span>
+                                </div>
+                                {voucherDiscount > 0 && (
+                                    <div className="checkout-summary-line discount">
+                                        <span>
+                                            Voucher <Tag color="green" className="checkout-voucher-tag">{voucher?.code}</Tag>
+                                        </span>
+                                        <span className='checkout-discount-value'>- {voucherDiscount.toLocaleString()}đ</span>
+                                    </div>
+                                )}
+                                {usedXu > 0 && (
+                                    <div className="checkout-summary-line discount">
+                                        <span>Sử dụng xu</span>
+                                        <span className='checkout-discount-value'>- {usedXu.toLocaleString()} xu</span>
+                                    </div>
+                                )}
                             </div>
-                            {voucherDiscount > 0 && (
-                                <div className="summary-line">
-                                    <span>Voucher <Tag color="green">{voucher?.code}</Tag></span>
-                                    <span className='discount-value'>- {voucherDiscount.toLocaleString()}đ</span>
+
+                            <div className="checkout-total-section">
+                                <div className="checkout-summary-line total">
+                                    <span>Tổng cộng</span>
+                                    <span className='checkout-total-price'>{finalPrice.toLocaleString()}đ</span>
                                 </div>
-                            )}
-                            {usedXu > 0 && (
-                                <div className="summary-line">
-                                    <span>Sử dụng xu</span>
-                                    <span className='discount-value'>- {usedXu.toLocaleString()} xu</span>
-                                </div>
-                            )}
-                            <div className="summary-line total">
-                                <span>Tổng cộng</span>
-                                <span className='total-price'>{finalPrice.toLocaleString()}đ</span>
                             </div>
                         </div>
-                        <Button type="primary" danger block size="large" className="place-order-btn" onClick={handlePlaceOrder} loading={addressLoading}>
-                            Thanh toán
-                        </Button>
+
+                        <div className="checkout-actions">
+                            <Button
+                                type="primary"
+                                danger
+                                block
+                                size="large"
+                                className="checkout-place-order-btn"
+                                onClick={handlePlaceOrder}
+                                loading={addressLoading}
+                                disabled={!selectedAddressId}
+                            >
+                                {selectedAddressId ? 'Thanh toán ngay' : 'Vui lòng chọn địa chỉ'}
+                            </Button>
+                            {!selectedAddressId && (
+                                <p className="checkout-address-warning">Vui lòng chọn địa chỉ giao hàng để tiếp tục</p>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -285,16 +385,54 @@ const CheckoutPage = () => {
 
             <Modal
                 open={paymentResultModal.visible}
-                onCancel={() => setPaymentResultModal({ ...paymentResultModal, visible: false })}
-                footer={[
-                    <Button key="close" onClick={() => setPaymentResultModal({ ...paymentResultModal, visible: false })}>Đóng</Button>,
-                    paymentResultModal.message.includes("🎉") && (
-                        <Button key="orders" type="primary" onClick={() => navigate('/orders')}>Xem đơn hàng</Button>
-                    ),
-                ]}
+                title={paymentResultModal.message.includes("🎉") ? "Thanh toán thành công" : "Thông báo"}
                 centered
+                closable={false} // Vô hiệu hóa đóng modal
+                maskClosable={false} // Ngăn không cho click ra ngoài để đóng
+
+                footer={
+
+                    paymentResultModal.message.includes("🎉")
+                        ? [
+                            <Button
+                                key="continue"
+                                onClick={() => {
+                                    setPaymentResultModal({ visible: false, message: '' });
+                                    navigate('/products');
+                                }}
+                            >
+                                Tiếp tục mua sắm
+                            </Button>,
+                            <Button
+                                key="orders"
+                                type="primary"
+                                onClick={() => {
+                                    setPaymentResultModal({ visible: false, message: '' });
+                                    navigate('/orders');
+                                }}
+                            >
+                                Xem đơn hàng
+                            </Button>
+                        ]
+                        // Với các trường hợp khác (thất bại, lỗi...), chỉ cần nút Đóng
+                        : [
+                            <Button
+                                key="close"
+                                onClick={() => setPaymentResultModal({ visible: false, message: '' })}
+                            >
+                                Đóng
+                            </Button>
+                        ]
+                }
             >
-                <p style={{ textAlign: 'center', fontSize: '18px', padding: '20px' }}>{paymentResultModal.message}</p>
+                <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>
+                        {paymentResultModal.message.includes("🎉") ? "✅" : "⚠️"}
+                    </div>
+                    <p style={{ fontSize: '18px', margin: 0 }}>
+                        {paymentResultModal.message}
+                    </p>
+                </div>
             </Modal>
         </div>
     );

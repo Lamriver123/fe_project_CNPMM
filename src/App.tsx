@@ -33,6 +33,7 @@ import { PrivateRoute } from "./components/PrivateRoute.tsx";
 import { AdminRoute } from "./components/AdminRoute.tsx";
 import CheckoutPage from "./pages/Checkout/CheckoutPage.tsx";
 import { ToastContainer } from "react-toastify";
+import PaymentCallbackPage from "./pages/Checkout/PaymentCallbackPage.tsx";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -76,7 +77,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           {/* Client */}
-
+          <Route path="/payment-callback" element={<PaymentCallbackPage />} />
           <Route element={
             <PrivateRoute>
               <ClientLayout />
