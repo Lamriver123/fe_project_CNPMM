@@ -108,7 +108,8 @@ const Navbar: React.FC = () => {
   return (
     <nav className="uts-navbar">
       <div className="uts-container">
-        {/* Logo */}
+        <div className="uts-container left">
+           {/* Logo */}
         <Link className="uts-logo" to="/">
           <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFQ3JyNU4iAPI5aWf4ND9BL-7a0ijt0CeKTw&s" alt="logo" className="uts-logo-img" />
           <span className="uts-logo-text">UTEShop</span>
@@ -123,12 +124,16 @@ const Navbar: React.FC = () => {
         </ul>
 
         {/* Search bar */}
-        <div className="uts-search">
+        {/* <div className="uts-search">
           <input type="text" placeholder="Tìm kiếm sản phẩm, danh mục hoặc thương hiệu..." />
           <button><i className="bi bi-search"></i></button>
-        </div>
+        </div> */}
 
-        {/* Actions */}
+        
+        </div>
+            
+        <div>
+          {/* Actions */}
         <div className="uts-actions">
           {/* Wishlist */}
           <button className="uts-icon-btn" onClick={handleFavoriteClick}>
@@ -185,9 +190,7 @@ const Navbar: React.FC = () => {
               </div>
             )}
           </div>
-
-
-          {/* User info */}
+           {/* User info */}
           {token && user ? (
             <div className="uts-user-info" ref={userDropdownRef}>
               <span className="uts-username" onClick={toggleUserDropdown}>
@@ -209,6 +212,10 @@ const Navbar: React.FC = () => {
             </>
           )}
         </div>
+      </div>
+
+
+         
       </div>
     </nav>
   );
