@@ -40,3 +40,18 @@ export const getAllUsers = async (page = 1, limit = 5, keyword = "") => {
   return res;
 };
 
+export const toggleUserActive = async (userId: string, isActive: boolean) => {
+  const res = await axiosClient.put(`/admin/users/${userId}/active`, {
+    isActive,
+  });
+  return res.data;
+};
+
+
+export const adminUpdateUserProfile = async (userId: string, data: any) => {
+  const res = await axiosClient.put(`/admin/users/${userId}/update`, data);
+  return res.data;
+};
+
+
+
