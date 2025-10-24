@@ -46,7 +46,7 @@ const ProductsPage = () => {
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = e.target.value;
     if (selected) {
-      navigate(`/category/${selected}`); // 👉 redirect sang CategoryPage
+      navigate(`/category/${selected}`); 
     }
   };
 
@@ -54,7 +54,7 @@ const ProductsPage = () => {
   const latestProducts = [...products].sort((a, b) => b.createdAt - a.createdAt).slice(0, 8);
   const bestSellerProducts = [...products].sort((a, b) => b.sold - a.sold).slice(0, 6);
   const mostViewedProducts = [...products].sort((a, b) => b.views - a.views).slice(0, 8);
-  const discountProducts = [...products].sort((a, b) => (b.discountPercent ?? 0) - (a.discountPercent ?? 0)).slice(0, 4);
+  const discountProducts = [...products].sort((a, b) => (b.discount ?? 0) - (a.discount ?? 0)).slice(0, 4);
 
   return (
       <div className="mx-auto px-4 flex flex-row width-full justify-center items-center">

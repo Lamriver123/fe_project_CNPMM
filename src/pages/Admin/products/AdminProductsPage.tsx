@@ -1,91 +1,61 @@
-import { useState } from "react";
-import "react-circular-progressbar/dist/styles.css";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { FiBox } from "react-icons/fi";
 import { Category } from "../../../types/Category";
 import { Product } from "../../../types/Product";
 import AddProductDialog from "./AddProductDialog.tsx";
-import "./AdminProductsPage.css";
 import EditProductDialog from "./EditProductDialog.tsx";
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./AdminProductsPage.css";
+import { adminProductApi } from "../../../api/adminProductApi.ts";
+import { CategoryApi } from "../../../api/categoryApi.ts";
 export default function AdminProductsPage() {
-  const [products, setProducts] = useState<Product[]>([
-    {
-      _id: "1",
-      name: "Áo thun nam",
-      price: 199000,
-      discountPercent: 10,
-      quantity: 20,
-      sold: 5,
-      description: "Áo thun nam cotton 100%",
-      category: { _id: "c1", name: "Thời trang", slug: "thoi-trang" } as Category,
-      views: 50,
-      images: [{ url: "https://hidola.com/upload/sanpham/31891665.jpg" }],
-      status: "available",
-      slug: "ao-thun-nam",
-      createdAt: Date.now(),
-    },
-    {
-      _id: "2",
-      name: "Áo thun nam",
-      price: 199000,
-      discountPercent: 10,
-      quantity: 20,
-      sold: 5,
-      description: "Áo thun nam cotton 100%",
-      category: { _id: "c1", name: "Thời trang", slug: "thoi-trang" } as Category,
-      views: 50,
-      images: [{ url: "https://hidola.com/upload/sanpham/31891665.jpg" }],
-      status: "available",
-      slug: "ao-thun-nam",
-      createdAt: Date.now(),
-    },
-    {
-      _id: "3",
-      name: "Áo thun nam",
-      price: 199000,
-      discountPercent: 10,
-      quantity: 20,
-      sold: 5,
-      description: "Áo thun nam cotton 100%",
-      category: { _id: "c1", name: "Thời trang", slug: "thoi-trang" } as Category,
-      views: 50,
-      images: [{ url: "https://hidola.com/upload/sanpham/31891665.jpg" }],
-      status: "available",
-      slug: "ao-thun-nam",
-      createdAt: Date.now(),
-    },
-    {
-      _id: "4",
-      name: "Áo thun nam",
-      price: 199000,
-      discountPercent: 10,
-      quantity: 20,
-      sold: 5,
-      description: "Áo thun nam cotton 100%",
-      category: { _id: "c1", name: "Thời trang", slug: "thoi-trang" } as Category,
-      views: 50,
-      images: [{ url: "https://hidola.com/upload/sanpham/31891665.jpg" }],
-      status: "available",
-      slug: "ao-thun-nam",
-      createdAt: Date.now(),
-    },
-  ]);
-
+  const [products, setProducts] = useState<Product[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [filterCategory, setFilterCategory] = useState("all");
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]); // 👈 danh mục fetch từ BE
 
-  // Lọc
-  const filteredProducts =
-    filterCategory === "all"
-      ? products
-      : products.filter((p) => p.category?.name === filterCategory);
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, [page, filterCategory]);
 
+  const fetchProducts = async () => {
+    try {
+      const res = await adminProductApi.getProducts(page, 10, filterCategory);
+      console.log(res);
+      if(res.success){
+        setProducts(res.data || []);
+        setTotalPages(res.pagination.totalPages);
+      }
+      
+      // if (res.success) {
+      //   setProducts(res.data);
+      //   setTotalPages(res.pagination.totalPages);
+      // }
+    } catch (err) {
+      toast.error("Không thể tải danh sách sản phẩm!");
+    }
+  };
 
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) return;
+    try {
+      await axios.delete(`/api/products/${id}`);
+      toast.success("Đã xóa sản phẩm!");
+      fetchProducts();
+    } catch {
+      toast.error("Lỗi khi xóa sản phẩm");
+    }
+  };
 
   const handleAdd = (data: Product) => {
-    setProducts((prev) => [...prev, { ...data, _id: Date.now().toString() }]);
+    setProducts((prev) => [...prev, data]);
     setIsAddOpen(false);
   };
 
@@ -94,9 +64,12 @@ export default function AdminProductsPage() {
     setIsEditOpen(false);
   };
 
-  const handleDelete = (id: string) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
-      setProducts((prev) => prev.filter((p) => p._id !== id));
+  const fetchCategories = async () => {
+    try {
+      const data = await CategoryApi.getCategories();
+      setCategories(data || []);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
     }
   };
 
@@ -107,21 +80,25 @@ export default function AdminProductsPage() {
         <div className="actions">
           <select
             value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
+            onChange={(e) => {
+              setPage(1);
+              setFilterCategory(e.target.value);
+            }}
           >
             <option value="all">Tất cả danh mục</option>
-            <option value="Thời trang">Thời trang</option>
-            <option value="Giày dép">Giày dép</option>
+            {categories.map((cate) => (
+              <option key={cate._id} value={`${cate._id}`}>
+                {cate.name}
+              </option>
+            ))}
           </select>
-          <button className="btn btn-primary" onClick={() => setIsAddOpen(true)}>
+          <button className="btn1 btn-primary1" onClick={() => setIsAddOpen(true)}>
             + Thêm sản phẩm
           </button>
         </div>
       </div>
 
-      
-
-      {/* Bảng sản phẩm */}
+      {/* Table */}
       <table className="products-table">
         <thead>
           <tr>
@@ -138,10 +115,10 @@ export default function AdminProductsPage() {
           </tr>
         </thead>
         <tbody>
-          {filteredProducts.map((p) => (
+          {products.map((p) => (
             <tr key={p._id}>
               <td>
-                {p.images?.[0] ? (
+                {p.images?.[0]?.url ? (
                   <img src={p.images[0].url} alt={p.name} className="product-img" />
                 ) : (
                   <span className="no-img">No Image</span>
@@ -150,28 +127,55 @@ export default function AdminProductsPage() {
               <td>{p.name}</td>
               <td>{p.category?.name}</td>
               <td>{p.price.toLocaleString()} đ</td>
-              <td>{p.discountPercent ?? 0}%</td>
+              <td>{p.discount ?? 0}%</td>
               <td>{p.quantity}</td>
               <td>{p.sold}</td>
               <td>{p.views}</td>
-              <td className={p.status === "available" ? "status-available" : "status-out"}>
+              <td
+                className={
+                  p.status === "available" ? "status-available" : "status-out"
+                }
+              >
                 {p.status === "available" ? "Còn hàng" : "Hết hàng"}
               </td>
               <td>
                 <button
                   className="btn btn-warning"
-                  onClick={() => { setEditingProduct(p); setIsEditOpen(true); }}
-                >Sửa</button>
+                  onClick={() => {
+                    setEditingProduct(p);
+                    setIsEditOpen(true);
+                  }}
+                >
+                  Sửa
+                </button>
                 <button
                   className="btn btn-danger"
                   onClick={() => handleDelete(p._id)}
-                >Xóa</button>
+                >
+                  Xóa
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
+      {/* Pagination */}
+      <div className="pagination">
+        <button
+          disabled={page <= 1}
+          onClick={() => setPage((p) => p - 1)}
+        >
+          Trước
+        </button>
+        <span>{page}/{totalPages}</span>
+        <button
+          disabled={page >= totalPages}
+          onClick={() => setPage((p) => p + 1)}
+        >
+          Sau
+        </button>
+      </div>
 
       {/* Dialogs */}
       <AddProductDialog
@@ -187,17 +191,7 @@ export default function AdminProductsPage() {
           product={editingProduct}
         />
       )}
-
-      <ToastContainer 
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        pauseOnHover
-        draggable
-        theme="colored"
-      />
+      <ToastContainer position="top-right" autoClose={2000} />
     </div>
   );
 }

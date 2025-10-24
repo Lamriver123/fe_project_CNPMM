@@ -1,5 +1,5 @@
 
-import { Category } from '../types/Category.ts';
+import { ApiCategoryResponse, Category } from '../types/Category.ts';
 import { Product } from '../types/Product';
 import axiosClient from './axiosClient.ts';
 
@@ -22,4 +22,10 @@ export const CategoryApi = {
       `/products?category=${slug}&page=${page}&limit=${limit}`
     );
   },
+
+  addCategory: async (data: Partial<Category>): Promise<ApiCategoryResponse<Category>> => {
+    const res = await axiosClient.post("/admin/categories", data);
+    return res.data; 
+  },
+
 }

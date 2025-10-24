@@ -133,11 +133,11 @@ export default function ProductDetailPage() {
         <div className="product-info">
           <h1 className="product-title">{product.name}</h1>
 
-          {product.discountPercent ? (
+          {product.discount ? (
             <div className="price-box">
-              <span className="price">{formatPrice(product.price)}</span>
-              <span className="original-price">{formatPrice(product.originalPrice!)}</span>
-              <span className="discount">-{product.discountPercent}%</span>
+              <span className="price">{formatPrice(product.price*(1-product.discount/100))}</span>
+              <span className="original-price">{formatPrice(product.price)}</span>
+              <span className="discount">-{product.discount}%</span>
             </div>
           ) : (
             <p className="price">{formatPrice(product.price)}</p>

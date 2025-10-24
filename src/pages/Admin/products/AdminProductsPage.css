@@ -19,7 +19,7 @@
 }
 
 .actions select,
-.actions .btn-primary {
+.actions .btn-primary1 {
   padding: 8px 14px;
   border-radius: 6px;
   border: 1px solid #ccc;
@@ -66,14 +66,14 @@
 }
 
 /* ----- Buttons ----- */
-.btn {
+.btn1 {
   padding: 6px 12px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
 }
-.btn-primary {
+.btn-primary1 {
   background: #1abc9c;
   color: #fff;
 }
@@ -134,3 +134,45 @@
   justify-content: flex-end;
   gap: 10px;
 }
+/* Hiệu ứng hover */
+.products-table tr:hover {
+  background: #f9fafc;
+  transition: background 0.2s ease;
+}
+
+/* Hàng xen kẽ màu */
+.products-table tbody tr:nth-child(odd) {
+  background: #fcfcfc;
+}
+
+/* Header bo tròn hơn */
+.products-table th:first-child {
+  border-top-left-radius: 12px;
+}
+.products-table th:last-child {
+  border-top-right-radius: 12px;
+}
+
+/* Cải thiện pagination */
+.pagination {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.pagination button {
+  background: #1abc9c;
+  border: none;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+

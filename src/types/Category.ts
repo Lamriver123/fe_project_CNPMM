@@ -4,3 +4,8 @@ export interface Category {
   description?: string;
   slug: string;
 }
+export interface ApiCategoryResponse<T> {
+    success: boolean;
+    data: T;
+    message: string;
+}

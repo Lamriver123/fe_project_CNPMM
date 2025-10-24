@@ -57,7 +57,7 @@ export default function ProductCard({ product, formatPrice }: ProductCardProps) 
         <h3 className="product-name">{product.name}</h3>
         <div className="product-category">{product.category.name}</div>
         <div className="product-price">
-          <span className="current-price">{formatPrice(product.price)}</span>
+          <span className="current-price">{formatPrice(product.price * (1 - product.discount / 100))}</span>
           {product.originalPrice && (
             <span className="original-price">
               {formatPrice(product.originalPrice)}
