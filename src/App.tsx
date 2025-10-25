@@ -35,6 +35,8 @@ import CheckoutPage from "./pages/Checkout/CheckoutPage.tsx";
 import { ToastContainer } from "react-toastify";
 import PaymentCallbackPage from "./pages/Checkout/PaymentCallbackPage.tsx";
 
+import "react-toastify/dist/ReactToastify.css";
+
 export default function App() {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.auth.user);
@@ -112,18 +114,7 @@ export default function App() {
           </Route>
         </Routes>
       </BrowserRouter>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+      <ToastContainer position="top-right" autoClose={2000} newestOnTop />
     </>
   );
 

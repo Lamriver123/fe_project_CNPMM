@@ -87,18 +87,6 @@ const AdminOrdersPage: React.FC = () => {
           ))
         )}
       </div>
-
-      {/* Toast container phải có */}
-      <ToastContainer 
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        pauseOnHover
-        draggable
-        theme="colored"
-      />
     </div>
   );
 };

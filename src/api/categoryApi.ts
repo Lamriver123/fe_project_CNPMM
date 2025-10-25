@@ -24,8 +24,7 @@ export const CategoryApi = {
   },
 
   addCategory: async (data: Partial<Category>): Promise<ApiCategoryResponse<Category>> => {
-    const res = await axiosClient.post("/admin/categories", data);
-    return res.data; 
+    return await axiosClient.post("/admin/categories", data);
   },
 
 }

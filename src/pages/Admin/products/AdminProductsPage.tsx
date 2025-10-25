@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { FiBox } from "react-icons/fi";
 import { Category } from "../../../types/Category";
-import { Product } from "../../../types/Product";
+import { ApiAddProductResponse, Product } from "../../../types/Product";
 import AddProductDialog from "./AddProductDialog.tsx";
 import EditProductDialog from "./EditProductDialog.tsx";
 import { toast, ToastContainer } from "react-toastify";
@@ -46,22 +46,44 @@ export default function AdminProductsPage() {
   const handleDelete = async (id: string) => {
     if (!window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) return;
     try {
-      await axios.delete(`/api/products/${id}`);
-      toast.success("Đã xóa sản phẩm!");
-      fetchProducts();
+      const res = await adminProductApi.deleteProduct(id);
+      if (res.success) {
+        toast.success("Đã xóa sản phẩm!");
+        fetchProducts();
+      } else {
+        toast.error("Xóa sản phẩm thất bại!");
+      }
     } catch {
       toast.error("Lỗi khi xóa sản phẩm");
     }
   };
 
-  const handleAdd = (data: Product) => {
-    setProducts((prev) => [...prev, data]);
-    setIsAddOpen(false);
+  const handleAdd = (res: ApiAddProductResponse<Product>) => {
+    if(res.success){
+      console.log("Added product:", res);
+      setIsAddOpen(false);
+      console.log("Added product:", res);
+      toast.success("Thêm sản phẩm thành công!");
+      fetchProducts();
+      fetchCategories();
+    }
+    else{
+      toast.error("Thêm sản phẩm thất bại!");
+    }
+
   };
 
-  const handleEdit = (data: Product) => {
-    setProducts((prev) => prev.map((p) => (p._id === data._id ? data : p)));
-    setIsEditOpen(false);
+  const handleEdit = (data: ApiAddProductResponse<Product>) => {
+    if(data.success){
+      console.log("Edited product:", data);
+      setIsEditOpen(false);
+      toast.success("Cập nhật sản phẩm thành công!");
+    }
+    else{
+      toast.error("Cập nhật sản phẩm thất bại!");
+    }
+    fetchProducts();
+    fetchCategories();
   };
 
   const fetchCategories = async () => {
@@ -136,24 +158,28 @@ export default function AdminProductsPage() {
                   p.status === "available" ? "status-available" : "status-out"
                 }
               >
-                {p.status === "available" ? "Còn hàng" : "Hết hàng"}
+                {p.status === "available" ? "Còn hàng" : p.status === "out_of_stock" ? "Hết hàng" : "Đã xóa"}
               </td>
               <td>
-                <button
-                  className="btn btn-warning"
-                  onClick={() => {
-                    setEditingProduct(p);
-                    setIsEditOpen(true);
-                  }}
-                >
-                  Sửa
-                </button>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => handleDelete(p._id)}
-                >
-                  Xóa
-                </button>
+                {p.status !== "deleted" && (
+                  <>
+                    <button
+                      className="btn btn-warning"
+                      onClick={() => {
+                        setEditingProduct(p);
+                        setIsEditOpen(true);
+                      }}
+                    >
+                      Sửa
+                    </button>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => handleDelete(p._id)}
+                    >
+                      Xóa
+                    </button>
+                  </>
+                )}
               </td>
             </tr>
           ))}
@@ -176,7 +202,6 @@ export default function AdminProductsPage() {
           Sau
         </button>
       </div>
-
       {/* Dialogs */}
       <AddProductDialog
         isOpen={isAddOpen}
@@ -191,7 +216,7 @@ export default function AdminProductsPage() {
           product={editingProduct}
         />
       )}
-      <ToastContainer position="top-right" autoClose={2000} />
+
     </div>
   );
 }

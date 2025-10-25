@@ -12,18 +12,15 @@ export const adminProductApi = {
   },
 
   addProduct: async (data: CreateProductPayload) : Promise<ApiAddProductResponse<Product>>=> {
-    const res = await axiosClient.post("/admin/products", data);
-    return res.data; // có success + message + data
+    return await axiosClient.post("/admin/products", data);
   },
 
   updateProduct: async (id: string, data: UpdateProductPayload) : Promise<ApiAddProductResponse<Product>> => {
-    const res = await axiosClient.put(`/admin/products/${id}`, data);
-    return res.data;
+    return await axiosClient.put(`/admin/products/${id}`, data);
   },
 
   deleteProduct: async (id: string) : Promise<ApiAddProductResponse<Product>> => {
-    const res = await axiosClient.delete(`/admin/products/${id}`);
-    return res.data;
+    return await axiosClient.delete(`/admin/products/${id}`);
   },
 
   

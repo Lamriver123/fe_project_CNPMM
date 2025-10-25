@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
 import { Category } from "../../../types/Category";
-import { Product, CreateProductPayload} from "../../../types/Product";
+import { Product, CreateProductPayload, ApiAddProductResponse} from "../../../types/Product";
 import { CategoryApi } from "../../../api/categoryApi.ts";
 import { toast, ToastContainer } from "react-toastify";
 import { adminProductApi } from "../../../api/adminProductApi.ts";
 
 import "./ProductDialog.css";
+import { setMaxIdleHTTPParsers } from "http";
+import { on } from "events";
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: Product) => void;
+  onSave: (data: ApiAddProductResponse<Product>) => void;
 };
 
 export default function AddProductDialog({ isOpen, onClose, onSave }: Props) {
@@ -63,13 +65,24 @@ export default function AddProductDialog({ isOpen, onClose, onSave }: Props) {
 
   // thêm danh mục mới
   const handleAddCategory = async () => {
-    if (!newCategory.trim()) return;
+    if (!newCategory.trim()) {
+      toast.error("Vui lòng nhập tên danh mục!");
+      return;
+    }
     try {
       const res = await CategoryApi.addCategory({
         name: newCategory,
       });
-      if (res.success) toast.success(res.message || "Thêm danh mục thành công!");
-      else toast.error(res.message || "Thêm thất bại!");
+      if (res.success) {
+        toast.success(res.message || "Thêm danh mục thành công!");
+        fetchCategories();
+        // chọn luôn danh mục mới thêm
+        setFormData({ ...formData, category: res.data });
+        //select mới thêm
+        setShowAddCategory(false)
+      } else {
+        toast.error(res.message || "Thêm thất bại!");
+      }
     } catch (error) {
       toast.error("Lỗi máy chủ hoặc kết nối!");
     }
@@ -78,7 +91,7 @@ export default function AddProductDialog({ isOpen, onClose, onSave }: Props) {
 
   const handleSave = async () => {
     try {
-      if (!formData.name || !formData.price || !formData.category?._id) {
+      if (!formData.name.trim() || !formData.price || !formData.category?._id || images.length === 0) {
         toast.error("Vui lòng nhập đầy đủ thông tin!");
         return;
       }
@@ -96,8 +109,7 @@ export default function AddProductDialog({ isOpen, onClose, onSave }: Props) {
       const res = await adminProductApi.addProduct(payload);
 
       if (res.success) {
-        toast.success(res.message || "Thêm sản phẩm thành công!");
-        onSave(res.data); // gửi lại data cho component cha nếu cần
+        onSave(res); // gửi lại data cho component cha nếu cần
         onClose();
       } else {
         toast.error(res.message || "Thêm sản phẩm thất bại!");
@@ -283,7 +295,6 @@ export default function AddProductDialog({ isOpen, onClose, onSave }: Props) {
           </button>
         </div>
       </div>
-      <ToastContainer position="top-right" autoClose={2000} />
     </div>
   );
 }
