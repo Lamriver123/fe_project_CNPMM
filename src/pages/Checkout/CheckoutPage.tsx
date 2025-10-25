@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { useDeliveryAddress } from '../../hooks/useDeliveryAddress.ts';
 import { CartItem } from '../../types/Cart';
 import { Voucher } from '../../api/voucherApi';
@@ -143,9 +143,8 @@ const CheckoutPage = () => {
 
             if (res.success && res.url) {
                 const paymentWindow = window.open(res.url, "_blank");
-
                 if (!paymentWindow) {
-                    Modal.error({ title: "Lỗi", content: "Không thể mở tab thanh toán. Vui lòng kiểm tra cài đặt trình duyệt của bạn." });
+                    toast.error("Không thể mở tab thanh toán. Vui lòng kiểm tra cài đặt trình duyệt của bạn.");
                     return;
                 }
 
@@ -169,11 +168,11 @@ const CheckoutPage = () => {
 
                 window.addEventListener("message", handleMessage);
             } else {
-                Modal.error({ title: "Lỗi", content: "Không tạo được link thanh toán" });
+                toast.error("Không tạo được link thanh toán");
             }
         } catch (err) {
             console.error("Error creating payment:", err);
-            Modal.error({ title: "Lỗi", content: "Có lỗi xảy ra khi tạo thanh toán" });
+            toast.error("Có lỗi xảy ra khi tạo thanh toán");
         }
     };
 
@@ -434,6 +433,7 @@ const CheckoutPage = () => {
                     </p>
                 </div>
             </Modal>
+            <ToastContainer position="top-right" autoClose={2000} newestOnTop />
         </div>
     );
 };
