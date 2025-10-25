@@ -13,6 +13,7 @@ import {
 import "./UserDetailModal.css";
 import { User } from "../../../types/UserAdmin";
 import { adminOrderApi } from "../../../api/adminOrderApi.ts";
+import { adminUpdateUserProfile } from "../../../api/adminApis.ts";
 
 type ExtendedUser = User & {
   _id?: any;
@@ -71,6 +72,7 @@ const UserDetailModal: React.FC<{
 }> = ({ user, onClose, onSave }) => {
   const [edit, setEdit] = useState<ExtendedUser | null>(user as ExtendedUser | null);
   const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<"info" | "orders">("info");
   const [orders, setOrders] = useState<Order[]>([]);
 
@@ -160,18 +162,44 @@ const UserDetailModal: React.FC<{
 
   if (!user || !edit) return null;
 
-  const handleSave = () => {
-    // normalize dateOfBirth to ISO if present
-    if (
-      edit.dateOfBirth &&
-      typeof edit.dateOfBirth === "string" &&
-      /^\d{4}-\d{2}-\d{2}$/.test(edit.dateOfBirth)
-    ) {
-      edit.dateOfBirth = new Date(edit.dateOfBirth).toISOString();
+  const handleSave = async () => {
+    if (!edit) return;
+    const userId = getId(edit);
+    if (!userId || userId === "-") {
+      toast.error("ID người dùng không hợp lệ");
+      return;
     }
-    onSave(edit as User);
-    toast.success("Cập nhật thông tin thành công");
-    setIsEditing(false);
+
+    // prepare payload per API example
+    const payload: any = {
+      fullName: edit.fullName,
+      username: edit.username,
+      email: edit.email,
+      phoneNumber: edit.phone ?? edit.phoneNumber,
+      isActive: !!edit.isActive,
+    };
+    // optionally include dateOfBirth normalized
+    if (edit.dateOfBirth) {
+      const parsed = parseDate(edit.dateOfBirth);
+      if (parsed) payload.dateOfBirth = new Date(parsed).toISOString();
+    }
+
+    setSaving(true);
+    try {
+      const res = await adminUpdateUserProfile(userId, payload);
+      // if API returns updated user object use it, otherwise fallback to local edit
+      const updatedUser = (res && (res.data ?? res.user ?? res.updatedUser)) ? (res.data ?? res.user ?? res.updatedUser) : edit;
+      // normalize and call parent
+      onSave(updatedUser as User);
+      toast.success(res?.message ?? "Cập nhật thông tin thành công");
+      setIsEditing(false);
+      setEdit({ ...edit, ...payload } as ExtendedUser);
+    } catch (err: any) {
+      console.error("[UserDetailModal] adminUpdateUserProfile error:", err);
+      toast.error(err?.message || "Cập nhật thông tin thất bại");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCancel = () => {
@@ -241,7 +269,7 @@ const UserDetailModal: React.FC<{
           </div>
 
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            {!isEditing ? (
+            {/* {!isEditing ? (
               <button
                 className="btn tiny"
                 title="Chỉnh sửa"
@@ -269,7 +297,7 @@ const UserDetailModal: React.FC<{
                   Hủy
                 </button>
               </>
-            )}
+            )} */}
 
             <button className="btn-close" onClick={onClose} aria-label="Đóng">
               <FiX size={20} />
@@ -414,26 +442,8 @@ const UserDetailModal: React.FC<{
 
                     <label className="info-row">
                       <span className="label">Vai trò</span>
-                      {isEditing ? (
-                        <select
-                          value={getRole(edit)}
-                          onChange={(e) =>
-                            setEdit({
-                              ...edit,
-                              role:
-                                e.target.value === "ADMIN"
-                                  ? "ADMIN"
-                                  : "USER",
-                              isAdmin: e.target.value === "ADMIN",
-                            })
-                          }
-                        >
-                          <option value="USER">USER</option>
-                          <option value="ADMIN">ADMIN</option>
-                        </select>
-                      ) : (
-                        <span className="value">{getRole(edit)}</span>
-                      )}
+                      {/* Role is read-only — do not allow editing */}
+                      <span className="value">{getRole(edit)}</span>
                     </label>
 
                     <label className="info-row">
@@ -458,7 +468,7 @@ const UserDetailModal: React.FC<{
                       )}
                     </label>
 
-                    <label className="info-row">
+                    {/* <label className="info-row">
                       <span className="label">Ghi chú</span>
                       {isEditing ? (
                         <input
@@ -469,7 +479,7 @@ const UserDetailModal: React.FC<{
                       ) : (
                         <span className="value">{edit.note || "-"}</span>
                       )}
-                    </label>
+                    </label> */}
 
                     <div
                       className="action-row"
@@ -484,11 +494,11 @@ const UserDetailModal: React.FC<{
                         </button>
                       ) : (
                         <>
-                          <button className="btn ghost" onClick={handleCancel}>
+                          <button className="btn ghost" onClick={handleCancel} disabled={saving}>
                             Hủy
                           </button>
-                          <button className="btn primary" onClick={handleSave}>
-                            Lưu
+                          <button className="btn primary" onClick={handleSave} disabled={saving}>
+                            {saving ? "Đang lưu..." : "Lưu"}
                           </button>
                         </>
                       )}
@@ -533,7 +543,7 @@ const UserDetailModal: React.FC<{
                                   {o.status}
                                 </span>
                               </td>
-                              <td className="actions">
+                              {/* <td className="actions">
                                 <button
                                   className="btn tiny"
                                   onClick={() => handleOpenOrder(o.id)}
@@ -541,7 +551,7 @@ const UserDetailModal: React.FC<{
                                 >
                                   <FiExternalLink />
                                 </button>
-                              </td>
+                              </td> */}
                             </tr>
                           ))}
                         </tbody>

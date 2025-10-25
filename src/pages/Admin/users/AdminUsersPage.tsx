@@ -13,7 +13,7 @@ import {
 import "./AdminUsersPage.css";
 import UserDetailModal from "./UserDetailModal.tsx";
 import { User } from "../../../types/UserAdmin.ts";
-import { getAllUsers } from "../../../api/adminApis.ts";
+import { getAllUsers, toggleUserActive } from "../../../api/adminApis.ts";
 
 // debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -30,6 +30,7 @@ const AdminUsersPage: React.FC = () => {
   const [query, setQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
+  const [togglingUserId, setTogglingUserId] = useState<string | null>(null);
 
   // Pagination: fixed 5 per page per your API example
   const [page, setPage] = useState<number>(1);
@@ -170,10 +171,30 @@ const AdminUsersPage: React.FC = () => {
   };
 
   const toggleActive = async (user: User) => {
-    setUsers((prev) => prev.map((u) => (u.id === user.id ? { ...u, isActive: !u.isActive } : u)));
-    toast.info("Đã cập nhật trạng thái (chỉ local)");
-  };
+    const id = String(user.id ?? user._id ?? "");
+    if (!id) {
+      toast.error("ID người dùng không hợp lệ");
+      return;
+    }
 
+    // optimistic update
+    const nextState = !Boolean(user.isActive);
+    setTogglingUserId(id);
+    setUsers((prev) => prev.map((u) => (u.id === user.id ? { ...u, isActive: nextState } : u)));
+
+    try {
+      const res = await toggleUserActive(id, nextState);
+      toast.success(res?.message ?? (nextState ? "Mở khóa thành công" : "Khóa thành công"));
+    } catch (err: any) {
+      // revert on error
+      console.error("[AdminUsersPage] toggleUserActive error:", err);
+      setUsers((prev) => prev.map((u) => (u.id === user.id ? { ...u, isActive: !!user.isActive } : u)));
+      toast.error(err?.message || "Không thể cập nhật trạng thái người dùng");
+    } finally {
+      setTogglingUserId(null);
+    }
+  };
+  
   return (
     <div className="admin-users page-container">
       <div className="page-head">
@@ -236,7 +257,15 @@ const AdminUsersPage: React.FC = () => {
                     <td><span className={`role-badge ${u.role === "ADMIN" ? "admin" : "user"}`}>{u.role}</span></td>
                     <td><span className={`status-badge ${u.isActive ? "active" : "inactive"}`}>{u.isActive ? "Hoạt động" : "Đã khóa"}</span></td>
                     <td className="actions">
-                      <button className="btn tiny" onClick={(e) => { e.stopPropagation(); toggleActive(u); }} title={u.isActive ? "Khóa tài khoản" : "Mở khóa"}>{u.isActive ? <FiSlash /> : <FiCheck />}</button>
+                      <button
+                        className="btn tiny"
+                        onClick={(e) => { e.stopPropagation(); toggleActive(u); }}
+                        title={u.isActive ? "Khóa tài khoản" : "Mở khóa"}
+                        disabled={togglingUserId === String(u.id ?? u._id ?? "")}
+                        aria-busy={togglingUserId === String(u.id ?? u._id ?? "")}
+                      >
+                        {togglingUserId === String(u.id ?? u._id ?? "") ? "..." : (u.isActive ? <FiSlash /> : <FiCheck />)}
+                      </button>
                       <button className="btn tiny" onClick={(e) => { e.stopPropagation(); setSelectedUser(u); }} title="Xem chi tiết"><FiEdit /></button>
                     </td>
                   </tr>

@@ -6,13 +6,16 @@ import { Category } from '../types/Category.ts';
 import type { Product } from '../types/Product';
 
 export const productApi = {
-    // Limit mặc định là 6, page mặc định là 1, limit là số sản phẩm tối đa mỗi trang
-  getProducts: async (page: number = 1, limit: number = 6, category?: string) => {
-    const params: any = { page, limit };
+  // Limit mặc định là 6, page mặc định là 1, limit là số sản phẩm tối đa mỗi trang
+  getProducts: async (page: number = 1, limit: number = 6, category?: string, keyword: string = "") => {
+    const params: any = { page, limit, keyword };
     if (category) params.category = category;
 
-    return await axiosClient.get('/products', { params });
+    const res = await axiosClient.get('/products', { params });
+    console.log("📦 API response:", res);
+    return res;
   },
+
 
   getProductById: async (id: string): Promise<{data: Product}> => {
     return await axiosClient.get(`/products/${id}`);
