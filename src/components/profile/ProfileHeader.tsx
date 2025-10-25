@@ -1,19 +1,49 @@
 import React, { useEffect, useRef, useState } from "react";
 import type { User } from "../../types/User";
 import { useNavigate } from "react-router-dom";
+import { profileApi } from "../../api/profileApi.ts";
 
 interface ProfileHeaderProps {
     user: User;
 }
 
+interface UserStats {
+    orders: number;
+    reviews: number;
+}
+
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [previewAvatar, setPreviewAvatar] = useState<string | null>(null);
+    const [stats, setStats] = useState<UserStats>({ orders: 0, reviews: 0 });
+    const [loadingStats, setLoadingStats] = useState(false);
     const navigate = useNavigate();
 
     const handleAvatarClick = () => {
         fileInputRef.current?.click();
     };
+
+    // Load user stats (orders and reviews count)
+    useEffect(() => {
+        const loadUserStats = async () => {
+            try {
+                setLoadingStats(true);
+                const response = await profileApi.getUserStats();
+                if (response.success) {
+                    setStats(response.data);
+                }
+            } catch (error) {
+                console.error('Error loading user stats:', error);
+                // Keep default values if API fails
+            } finally {
+                setLoadingStats(false);
+            }
+        };
+
+        if (user) {
+            loadUserStats();
+        }
+    }, [user]);
 
     useEffect(() => {
         // Cleanup blob URL khi component unmount hoặc preview thay đổi
@@ -35,7 +65,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
 
     const handleTabClick = (tab: string) => {
         navigate(`/profile?tab=${tab}`);
-    }
+    };
+
+    const handleOrdersClick = () => {
+        navigate("/orders");
+    };
 
     return (
         <div className="profile-header">
@@ -65,12 +99,16 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                 </h1>
                 <p className="profile-email">{user.email}</p>
                 <div className="profile-stats">
-                    <div className="stat-item" onClick={() => handleTabClick('orders')}>
-                        <span className="profile-stat-number">1</span>
+                    <div className="stat-item" onClick={handleOrdersClick}>
+                        <span className="profile-stat-number">
+                            {loadingStats ? "..." : stats.orders}
+                        </span>
                         <span className="profile-stat-label">Đơn hàng</span>
                     </div>
-                    <div className="stat-item" onClick={() => handleTabClick('viewed')}>
-                        <span className="profile-stat-number">4</span>
+                    <div className="stat-item" onClick={() => handleTabClick('reviews')}>
+                        <span className="profile-stat-number">
+                            {loadingStats ? "..." : stats.reviews}
+                        </span>
                         <span className="profile-stat-label">Đánh giá</span>
                     </div>
                     <div className="stat-item" onClick={() => handleTabClick('favorites')}>

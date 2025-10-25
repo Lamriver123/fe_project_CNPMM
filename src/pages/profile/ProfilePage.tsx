@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import FavoritesCard from "../../components/profile/FavoritesCard.tsx";
 import OrdersCard from "../../components/profile/OrdersCard.tsx";
 import PersonalInfoCard from "../../components/profile/PersonalInfoCard.tsx";
+import ReviewsCard from "../../components/profile/ReviewsCard.tsx";
 import "../../components/profile/ProfileComponents.css";
 import ProfileHeader from "../../components/profile/ProfileHeader.tsx";
 import ProfileSidebar from "../../components/profile/ProfileSidebar.tsx";
@@ -49,6 +50,8 @@ export default function ProfilePage() {
                 return <FavoritesCard favProducts={user.favProducts} />;
             case 'viewed':
                 return <ViewedProductsCard viewedProducts={user.viewedProducts} />;
+            case 'reviews':
+                return <ReviewsCard />;
 
 
             // case 'security':
@@ -120,7 +123,7 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
-            <ToastContainer 
+            <ToastContainer
                 position="top-right"
                 autoClose={2000}
                 hideProgressBar={false}
