@@ -33,6 +33,7 @@ export default function ProfilePage() {
     const handleUpdateProfile = async (data: Partial<User>) => {
         try {
             await updateProfile(data);
+            toast.success("Cập nhật thông tin thành công!");
         } catch (error) {
             console.error('Error updating profile:', error);
         }
@@ -123,7 +124,7 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
-            <ToastContainer
+            {/* <ToastContainer
                 position="top-right"
                 autoClose={2000}
                 hideProgressBar={false}
@@ -132,7 +133,7 @@ export default function ProfilePage() {
                 pauseOnHover
                 draggable
                 theme="colored"
-            />
+            /> */}
         </div>
     );
 }

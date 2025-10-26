@@ -355,7 +355,7 @@ const CartPage = () => {
         </div>
       </Modal>
 
-      <ToastContainer
+      {/* <ToastContainer
         position="top-right"
         autoClose={2000}
         hideProgressBar={false}
@@ -364,7 +364,7 @@ const CartPage = () => {
         pauseOnHover
         draggable
         theme="colored"
-      />
+      /> */}
     </div>
   );
 };

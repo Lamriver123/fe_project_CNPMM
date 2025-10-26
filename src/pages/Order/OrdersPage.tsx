@@ -321,7 +321,7 @@ const OrdersPage: React.FC = () => {
       )}
 
       {/* Toast container phải có */}
-      <ToastContainer
+      {/* <ToastContainer
         position="top-right"
         autoClose={2000}
         hideProgressBar={false}
@@ -330,7 +330,7 @@ const OrdersPage: React.FC = () => {
         pauseOnHover
         draggable
         theme="colored"
-      />
+      /> */}
     </div>
   );
 };

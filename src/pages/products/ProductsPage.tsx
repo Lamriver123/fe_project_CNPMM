@@ -118,7 +118,7 @@ const ProductsPage = () => {
         formatPrice={formatPrice}
       />
 
-      <ToastContainer
+      {/* <ToastContainer
         position="top-right"
         autoClose={2000}
         hideProgressBar={false}
@@ -127,7 +127,7 @@ const ProductsPage = () => {
         pauseOnHover
         draggable
         theme="colored"
-      />
+      /> */}
     </div>
   );
 

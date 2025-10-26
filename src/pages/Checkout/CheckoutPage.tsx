@@ -495,7 +495,7 @@ const CheckoutPage = () => {
                     </p>
                 </div>
             </Modal>
-            <ToastContainer position="top-right" autoClose={2000} newestOnTop />
+            {/* <ToastContainer position="top-right" autoClose={2000} newestOnTop /> */}
         </div>
     );
 };

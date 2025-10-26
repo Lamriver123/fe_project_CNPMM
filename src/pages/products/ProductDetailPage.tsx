@@ -135,7 +135,7 @@ export default function ProductDetailPage() {
 
           {product.discount ? (
             <div className="price-box">
-              <span className="price">{formatPrice(product.price*(1-product.discount/100))}</span>
+              <span className="price">{formatPrice(product.price * (1 - product.discount / 100))}</span>
               <span className="original-price">{formatPrice(product.price)}</span>
               <span className="discount">-{product.discount}%</span>
             </div>
@@ -179,7 +179,7 @@ export default function ProductDetailPage() {
         formatPrice={formatPrice}
       />
 
-      <ToastContainer 
+      {/* <ToastContainer 
         position="top-right"
         autoClose={2000}
         hideProgressBar={false}
@@ -188,7 +188,7 @@ export default function ProductDetailPage() {
         pauseOnHover
         draggable
         theme="colored"
-      />
+      /> */}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { User } from "../../types/User";
+import { toast } from "react-toastify";
 
 interface PersonalInfoCardProps {
     user: User;
