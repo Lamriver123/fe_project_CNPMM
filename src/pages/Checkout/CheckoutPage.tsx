@@ -5,8 +5,8 @@ import { useDeliveryAddress } from '../../hooks/useDeliveryAddress.ts';
 import { CartItem } from '../../types/Cart';
 import { Voucher } from '../../api/voucherApi';
 import { paymentApi } from '../../api/paymentApi.ts';
-import { Button, Tag, Modal, Spin } from 'antd';
-import { PlusOutlined, HomeOutlined, EditOutlined, DeleteOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { Button, Tag, Modal, Spin, Radio } from 'antd';
+import { PlusOutlined, HomeOutlined, EditOutlined, DeleteOutlined, ShoppingCartOutlined, CreditCardOutlined, TruckOutlined } from '@ant-design/icons';
 
 import './CheckoutPage.css';
 import AddressFormModal from './AddressFormModal.tsx';
@@ -33,6 +33,7 @@ const CheckoutPage = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingAddress, setEditingAddress] = useState<DeliveryAddress | null>(null);
     const [paymentResultModal, setPaymentResultModal] = useState({ visible: false, message: '' });
+    const [paymentMethod, setPaymentMethod] = useState<'bank' | 'cod'>('bank');
 
     const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false);
     const [addressToDelete, setAddressToDelete] = useState<string | null>(null);
@@ -132,44 +133,54 @@ const CheckoutPage = () => {
             toast.warn('Vui lòng chọn địa chỉ giao hàng.');
             return;
         }
+
         try {
             const payload = {
                 items: items.map(item => item.product._id),
                 voucherCode: voucher?.code || null,
                 usedXu: Number(usedXu) || 0,
                 deliveryAddressId: selectedAddressId,
+                type: paymentMethod // Thêm type thanh toán
             };
+            // Bank - Thanh toán qua ngân hàng
             const res = await paymentApi.createQr(payload);
 
-            if (res.success && res.url) {
-                const paymentWindow = window.open(res.url, "_blank");
-                if (!paymentWindow) {
-                    toast.error("Không thể mở tab thanh toán. Vui lòng kiểm tra cài đặt trình duyệt của bạn.");
-                    return;
-                }
-
-                // Lắng nghe kết quả từ tab thanh toán
-                const handleMessage = (event: MessageEvent) => {
-                    if (event.origin !== window.location.origin) return;
-
-                    const { status } = event.data;
-                    let message = "";
-                    switch (status) {
-                        case "paid": message = "🎉 Thanh toán thành công!"; break;
-                        case "failed": message = "❌ Thanh toán thất bại!"; break;
-                        case "invalid": message = "⚠️ Giao dịch không hợp lệ!"; break;
-                        case "notfound": message = "🔎 Không tìm thấy đơn hàng!"; break;
-                        default: message = "Có lỗi xảy ra trong quá trình thanh toán.";
+            if (res.success) {
+                if (res.url) {
+                    const paymentWindow = window.open(res.url, "_blank");
+                    if (!paymentWindow) {
+                        toast.error("Không thể mở tab thanh toán. Vui lòng kiểm tra cài đặt trình duyệt của bạn.");
+                        return;
                     }
 
-                    setPaymentResultModal({ visible: true, message });
-                    window.removeEventListener("message", handleMessage);
-                };
+                    // Lắng nghe kết quả từ tab thanh toán
+                    const handleMessage = (event: MessageEvent) => {
+                        if (event.origin !== window.location.origin) return;
 
-                window.addEventListener("message", handleMessage);
+                        const { status } = event.data;
+                        let message = "";
+                        switch (status) {
+                            case "paid": message = "🎉 Thanh toán thành công!"; break;
+                            case "failed": message = "❌ Thanh toán thất bại!"; break;
+                            case "invalid": message = "⚠️ Giao dịch không hợp lệ!"; break;
+                            case "notfound": message = "🔎 Không tìm thấy đơn hàng!"; break;
+                            default: message = "Có lỗi xảy ra trong quá trình thanh toán.";
+                        }
+
+                        setPaymentResultModal({ visible: true, message });
+                        window.removeEventListener("message", handleMessage);
+                    };
+
+                    window.addEventListener("message", handleMessage);
+                } else {
+                    // Trường hợp thanh toán COD
+                    setPaymentResultModal({ visible: true, message: "🎉 Đặt hàng thành công! Đơn hàng của bạn sẽ được giao đến địa chỉ đã chọn." });
+                }
+
             } else {
                 toast.error("Không tạo được link thanh toán");
             }
+
         } catch (err) {
             console.error("Error creating payment:", err);
             toast.error("Có lỗi xảy ra khi tạo thanh toán");
@@ -270,6 +281,52 @@ const CheckoutPage = () => {
                             </div>
                         </div>
                     </div>
+
+                    {/* Payment Method Section */}
+                    <div className="payment-method-section">
+                        <div className="checkout-section-header">
+                            <h2 className='checkout-section-title'>
+                                <CreditCardOutlined className="checkout-section-icon" />
+                                Phương thức thanh toán
+                            </h2>
+                            <p className="checkout-section-description">Chọn phương thức thanh toán cho đơn hàng</p>
+                        </div>
+
+                        <div className="payment-method-options">
+                            <Radio.Group
+                                value={paymentMethod}
+                                onChange={(e) => setPaymentMethod(e.target.value)}
+                                className="payment-radio-group"
+                            >
+                                <div className="payment-option">
+                                    <Radio value="bank" className="payment-radio">
+                                        <div className="payment-option-content">
+                                            <div className="payment-option-info">
+                                                <CreditCardOutlined className="payment-option-icon" />
+                                                <div className="payment-option-text">
+                                                    <h4>Thanh toán qua ngân hàng</h4>
+                                                    <p>Thanh toán trực tuyến qua VNPay</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Radio>
+                                </div>
+                                <div className="payment-option">
+                                    <Radio value="cod" className="payment-radio">
+                                        <div className="payment-option-content">
+                                            <div className="payment-option-info">
+                                                <TruckOutlined className="payment-option-icon" />
+                                                <div className="payment-option-text">
+                                                    <h4>Thanh toán khi nhận hàng (COD)</h4>
+                                                    <p>Thanh toán bằng tiền mặt khi nhận hàng</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Radio>
+                                </div>
+                            </Radio.Group>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="checkout-page-sidebar">
@@ -352,7 +409,12 @@ const CheckoutPage = () => {
                                 loading={addressLoading}
                                 disabled={!selectedAddressId}
                             >
-                                {selectedAddressId ? 'Thanh toán ngay' : 'Vui lòng chọn địa chỉ'}
+                                {!selectedAddressId
+                                    ? 'Vui lòng chọn địa chỉ'
+                                    : paymentMethod === 'cod'
+                                        ? 'Đặt hàng COD'
+                                        : 'Thanh toán ngay'
+                                }
                             </Button>
                             {!selectedAddressId && (
                                 <p className="checkout-address-warning">Vui lòng chọn địa chỉ giao hàng để tiếp tục</p>
