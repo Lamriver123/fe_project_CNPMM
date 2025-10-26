@@ -4,16 +4,16 @@ import { Order } from "../types/Order.ts";
 export const adminOrderApi = {
   // Lấy danh sách đơn hàng
   getOrders: async (status?: string) => {
-  const params: any = {};
-  if (status) params.status = status;
+    const params: any = {};
+    if (status) params.status = status;
 
-  const res = await axiosClient.get<{ orders: Order[] }>(
-    "/admin/orders",
-    { params }
-  );
+    const res = await axiosClient.get<{ orders: Order[] }>(
+      "/admin/orders",
+      { params }
+    );
 
-  return res.data?.orders ?? [];
-},
+    return res.data?.orders ?? [];
+  },
 
 
   // Cập nhật trạng thái đơn hàng

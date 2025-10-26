@@ -37,8 +37,8 @@ const parseDate = (v?: any) => {
       typeof v === "string"
         ? new Date(v)
         : v instanceof Date
-        ? v
-        : new Date(v.$date ?? v);
+          ? v
+          : new Date(v.$date ?? v);
     if (isNaN(d.getTime())) return "";
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, "0");
@@ -122,8 +122,8 @@ const UserDetailModal: React.FC<{
               return sum + priceAfterDiscount * qty;
             }, 0);
           }
-
-          const rawStatus = (o.status ?? o.statusOrder ?? "pending")
+          //const rawStatus = (o.status ?? o.statusOrder ?? "pending")
+          const rawStatus = (o.statusOrder ?? "unknown")
             .toString()
             .toLowerCase();
           const statusMap: Record<string, string> = {
@@ -223,7 +223,7 @@ const UserDetailModal: React.FC<{
     >
       <div className="user-detail-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <div className="header-content">
+          <div className="user-header-content">
             <div className="user-avatar-wrapper">
               <div className="user-avatar-large">
                 {(edit.fullName || "?").charAt(0).toUpperCase()}
@@ -235,16 +235,14 @@ const UserDetailModal: React.FC<{
                 <h2 className="user-name">{edit.fullName}</h2>
                 <div className="header-badges">
                   <span
-                    className={`status-badge ${
-                      edit.isActive ? "badge-active" : "badge-inactive"
-                    }`}
+                    className={`status-badge ${edit.isActive ? "badge-active" : "badge-inactive"
+                      }`}
                   >
                     {edit.isActive ? "Hoạt động" : "Đã khóa"}
                   </span>
                   <span
-                    className={`status-badge ${
-                      getRole(edit) === "ADMIN" ? "badge-admin" : "badge-user"
-                    }`}
+                    className={`status-badge ${getRole(edit) === "ADMIN" ? "badge-admin" : "badge-user"
+                      }`}
                   >
                     {getRole(edit)}
                   </span>

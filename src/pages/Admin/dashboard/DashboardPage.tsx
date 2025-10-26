@@ -84,7 +84,7 @@ export default function DashboardPage() {
         const topSoldProducts = await get10BestSellerProducts();
         // get10BestSellerProducts() trả về AxiosResponse<Product[]>
         // nên lấy .data để có Product[]
-        setProducts(topSoldProducts.data);
+        setProducts(topSoldProducts);
       } catch (e) {
         console.log(e);
       }
@@ -103,8 +103,8 @@ export default function DashboardPage() {
         const apiData: RevenueStat[] = revenueRes.map((d: RevenueApiResponse) => {
           const monthIndex = parseInt(d.date.split("-")[1]) - 1;
           const monthNames = [
-            "Jan","Feb","Mar","Apr","May","Jun",
-            "Jul","Aug","Sep","Oct","Nov","Dec"
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
           ];
           return {
             month: monthNames[monthIndex],
@@ -114,7 +114,7 @@ export default function DashboardPage() {
         });
         setChartData(apiData);
 
-        const usersApiData : NewUserApiResponse[] = usersRes.map((d: NewUserApiResponse) => {
+        const usersApiData: NewUserApiResponse[] = usersRes.map((d: NewUserApiResponse) => {
           return {
             date: d.date,
             users: d.users,
@@ -231,7 +231,7 @@ export default function DashboardPage() {
                 dataKey="sold"
                 name="Đã bán"
                 fill="#fb923c"
-                onClick={(barData : any) => {
+                onClick={(barData: any) => {
                   const data = barData && barData.activePayload && barData.activePayload[0] && barData.activePayload[0].payload ? barData.activePayload[0].payload : barData;
                   if (data && data._id) {
                     navigate(`/products/${data._id}`);
